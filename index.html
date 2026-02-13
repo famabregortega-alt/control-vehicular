@@ -1161,6 +1161,11 @@
 <h2>⏰ Próximas Verificaciones</h2>
 <div class="verification-list" id="upcomingVerifications"></div>
 </div>
+
+<div class="card">
+<h2>🔧 Mantenimientos Programados</h2>
+<div class="verification-list" id="upcomingMaintenances"></div>
+</div>
 </section>
 <!-- VEHÍCULOS -->
 <section class="section" id="vehicles">
@@ -1570,6 +1575,9 @@
     // Estado de edición de Verificaciones/Tenencias/Multas
     let editingVerification = { vehicleId: null, recordId: null };
 
+    // Estado de edición de Mantenimientos
+    let editingMaintenance = { vehicleId: null, recordId: null };
+
     // workPayments = { [vehicleId]: { [weekKeyStartISO]: number, ... }, ... }
     let workPayments = JSON.parse(localStorage.getItem('workPayments')) || {};
 
@@ -1607,6 +1615,14 @@ function setVerificationFormMode(isEdit){
       const btn = document.querySelector('#addVerificationForm button[type="submit"]');
       if(h2) h2.textContent = isEdit ? '✏️ Editar Registro' : '➕ Agregar Registro';
       if(btn) btn.textContent = isEdit ? 'Guardar cambios' : 'Agregar Registro';
+    }
+
+
+    function setMaintenanceFormMode(isEdit){
+      const h2 = document.querySelector('#maintenanceForm .card h2');
+      const btn = document.querySelector('#addMaintenanceForm button[type="submit"]');
+      if(h2) h2.textContent = isEdit ? '✏️ Editar Mantenimiento' : '➕ Agregar Mantenimiento';
+      if(btn) btn.textContent = isEdit ? 'Guardar cambios' : 'Agregar Mantenimiento';
     }
 
     function scrollToAddVehicle() {
@@ -1791,6 +1807,21 @@ function setVerificationFormMode(isEdit){
     function typeIcon(type){
       const map = { verificacion:'✅', tenencia:'💰', multa:'⚠️' };
       return map[type] || '📌';
+    }
+
+    function maintenanceTypeLabel(type){
+      const map = {
+        cambio_aceite:'Cambio de Aceite',
+        afinacion:'Afinación',
+        frenos:'Frenos',
+        llantas:'Llantas',
+        suspension:'Suspensión',
+        bateria:'Batería',
+        transmision:'Transmisión',
+        aire_acondicionado:'Aire Acondicionado',
+        otro:'Otro'
+      };
+      return map[type] || type;
     }
 
     // =========================
@@ -2031,6 +2062,53 @@ function setVerificationFormMode(isEdit){
         `).join('');
       }
     }
+
+      // =========================
+      // Dashboard: Mantenimientos programados (futuros)
+      // =========================
+      const upcomingMaintContainer = document.getElementById('upcomingMaintenances');
+      if(upcomingMaintContainer){
+        const upcomingMaint = [];
+        vehicles.forEach(v => {
+          const list = (maintenances && maintenances[v.id]) ? maintenances[v.id] : [];
+          list.forEach(m => {
+            if(!m || !m.date) return;
+            // programado = no terminado y fecha >= hoy
+            if(m.completed) return;
+            const daysUntil = calcDaysUntil(m.date);
+            if(daysUntil === null) return;
+            if(daysUntil >= 0){
+              upcomingMaint.push({
+                vehicleName: v.name || v.plates || 'Vehículo',
+                date: m.date,
+                type: m.type || 'mantenimiento',
+                daysUntil
+              });
+            }
+          });
+        });
+
+        upcomingMaint.sort((a,b) => parseISODateLocal(a.date) - parseISODateLocal(b.date));
+        const top = upcomingMaint.slice(0,10);
+
+        if(top.length === 0){
+          upcomingMaintContainer.innerHTML = '<div class="empty-state"><p>No hay mantenimientos programados</p></div>';
+        }else{
+          upcomingMaintContainer.innerHTML = top.map(item => `
+            <div class="verification-item">
+              <div class="item-info">
+                <h4>${escapeHtml(item.vehicleName)}</h4>
+                <p>🔧 ${escapeHtml(maintenanceTypeLabel(item.type))}</p>
+                <p>📅 ${formatDateMX(item.date)}</p>
+              </div>
+              <div>
+                <div class="badge badge-warning">${item.daysUntil} días</div>
+              </div>
+            </div>
+          `).join('');
+        }
+      }
+
 
     
     // =========================
@@ -2704,42 +2782,56 @@ function deleteVerification(vehicleId, id){
     // =========================
     function renderMaintenanceVehicleSelector(){
       const container = document.getElementById('maintenanceVehicleSelector');
+      if(!container) return;
+
       if(vehicles.length === 0){
         container.innerHTML = '<p class="empty-state">No hay vehículos registrados. Agrega un vehículo primero.</p>';
         document.getElementById('maintenanceForm').style.display = 'none';
         return;
       }
 
+      const openId = window.__openMaintVehicleId || null;
+
       container.innerHTML = `
         <div class="vehicle-list">
           ${vehicles.map(vehicle => {
-            const isSel = selectedVehicle && selectedVehicle.id === vehicle.id;
-            const title = (vehicle.plates && vehicle.plates.trim()) ? vehicle.plates.trim() : vehicle.name;
-            const mainTitle = title;
+            const isOpen = openId === vehicle.id;
+
+            // ✅ En Mantenimientos debe resaltar el NOMBRE (no la placa)
+            const mainTitle = (vehicle.name && vehicle.name.trim())
+              ? vehicle.name.trim()
+              : ((vehicle.plates && vehicle.plates.trim()) ? vehicle.plates.trim() : 'Vehículo');
+
+            // Subtítulo: placas · año · color
+            const subParts = [];
+            if(vehicle.plates && vehicle.plates.trim()) subParts.push(escapeHtml(vehicle.plates.trim()));
+            if(vehicle.year) subParts.push(escapeHtml(vehicle.year));
+            if(vehicle.color) subParts.push(escapeHtml(vehicle.color));
+            const sub = subParts.join(' <span class="bullet">·</span> ');
+
             const status = getVehicleStatusWithDays(vehicle.id);
             const imgSrc = vehicle.image || getCarSvgDataUri(colorToHex(vehicle.color || "Rojo"));
 
-            
             const dn = getDriverNameForVehicle(vehicle.id);
             const driverLine = dn ? `<div class="vehicle-subtitle">👤 ${escapeHtml(dn)}</div>` : '';
-const cat = (vehicle.category === 'Trabajo')
+
+            const cat = (vehicle.category === 'Trabajo')
               ? `<span class="badge badge-success" style="margin-left:.5rem;">TRABAJO</span>`
               : `<span class="badge badge-muted" style="margin-left:.5rem;">PARTICULAR</span>`;
 
-            const sub = `${escapeHtml(vehicle.name)} <span class="bullet">·</span> ${escapeHtml(vehicle.year)} <span class="bullet">·</span> ${escapeHtml(vehicle.color)}`;
-
             return `
-              <div class="vehicle-row ${isSel ? 'selected' : ''}" onclick="selectVehicleForMaintenance(${vehicle.id})">
+              <div class="vehicle-row ${isOpen ? 'selected' : ''}" onclick="toggleMaintenancePanel(${vehicle.id})">
                 <div class="vehicle-row-top">
                   <div>
                     <div class="vehicle-name-main">${escapeHtml(mainTitle)} ${cat}</div>
-                    <div class="vehicle-subtitle">${sub}</div>
-                ${driverLine}
+                    ${sub ? `<div class="vehicle-subtitle">${sub}</div>` : ''}
+                    ${driverLine}
                   </div>
                   <div class="vehicle-carimg">
                     <img src="${imgSrc}" alt="auto">
                   </div>
                 </div>
+
                 <div class="vehicle-row-bottom">
                   <div class="status">
                     <span class="dot ${status.dotClass}"></span>
@@ -2748,50 +2840,300 @@ const cat = (vehicle.category === 'Trabajo')
                       <small>${status.detail}</small>
                     </div>
                   </div>
+
                   <div class="row-actions">
-                    <span class="chev">›</span>
+                    <span class="chev">${isOpen ? '⌄' : '›'}</span>
                   </div>
                 </div>
+              </div>
+
+              <div class="veri-panel" id="maintPanel-${vehicle.id}" style="display:${isOpen ? 'block' : 'none'};">
+                <div class="panel-actions">
+                  <button class="mini-btn" type="button" onclick="event.stopPropagation(); openAddMaintenanceFor(${vehicle.id});">+ Agregar</button>
+                  <button class="mini-btn" type="button" onclick="event.stopPropagation(); toggleMaintenancePanel(${vehicle.id}, true);">Cerrar</button>
+                </div>
+                <div class="maintenance-list" id="maintList-${vehicle.id}"></div>
               </div>
             `;
           }).join('')}
         </div>
       `;
 
-      if(selectedVehicle) renderMaintenances();
+      // Renderiza el panel abierto (si existe)
+      if(openId) renderMaintenancesFor(openId);
     }
 
-    function selectVehicleForMaintenance(id){
-      selectedVehicle = vehicles.find(v => v.id === id);
-      document.getElementById('maintenanceForm').style.display = 'block';
+    // =========================
+    // Mantenimientos (panel por vehículo, estilo Verificaciones)
+    // =========================
+    function toggleMaintenancePanel(vehicleId, forceClose=false){
+      const current = window.__openMaintVehicleId || null;
+
+      if(forceClose || current === vehicleId){
+        window.__openMaintVehicleId = null;
+        selectedVehicle = null;
+        editingMaintenance = { vehicleId: null, recordId: null };
+        setMaintenanceFormMode(false);
+        const f = document.getElementById('addMaintenanceForm');
+        if(f) f.reset();
+        const mf = document.getElementById('maintenanceForm');
+        if(mf) mf.style.display = 'none';
+      }else{
+        window.__openMaintVehicleId = vehicleId;
+        selectedVehicle = vehicles.find(v => v.id === vehicleId) || null;
+        const mf = document.getElementById('maintenanceForm');
+        if(mf) mf.style.display = selectedVehicle ? 'block' : 'none';
+      }
+
       renderMaintenanceVehicleSelector();
-      renderMaintenances();
+    }
+
+    function openAddMaintenanceFor(vehicleId){
+      window.__openMaintVehicleId = vehicleId;
+      selectedVehicle = vehicles.find(v => v.id === vehicleId) || null;
+
+      // al agregar nuevo, salimos de edición
+      editingMaintenance = { vehicleId: null, recordId: null };
+      setMaintenanceFormMode(false);
+      const f = document.getElementById('addMaintenanceForm');
+      if(f) f.reset();
+
+      const mf = document.getElementById('maintenanceForm');
+      if(mf) mf.style.display = selectedVehicle ? 'block' : 'none';
+
+      renderMaintenanceVehicleSelector();
+
+      const form = document.getElementById('addMaintenanceForm');
+      if(form) form.scrollIntoView({ behavior:'smooth', block:'start' });
+    }
+
+    function renderMaintenancesFor(vehicleId){
+      const container = document.getElementById(`maintList-${vehicleId}`) || document.getElementById('maintenanceList');
+      if(!container) return;
+
+      const list = (maintenances && maintenances[vehicleId]) ? maintenances[vehicleId] : [];
+      if(list.length === 0){
+        container.innerHTML = '<div class="empty-state"><p>No hay mantenimientos registrados para este vehículo</p></div>';
+        return;
+      }
+
+      // Orden por fecha (local)
+      const records = [...list].sort((a,b) => (parseISODateLocal(b.date) - parseISODateLocal(a.date)));
+
+      const typeNames = {
+        cambio_aceite:'🛢️ Cambio de Aceite',
+        afinacion:'⚙️ Afinación',
+        frenos:'🛑 Frenos',
+        llantas:'🚗 Llantas',
+        suspension:'🔧 Suspensión',
+        bateria:'🔋 Batería',
+        transmision:'⚡ Transmisión',
+        aire_acondicionado:'❄️ Aire Acondicionado',
+        otro:'🔨 Otro'
+      };
+
+      container.innerHTML = records.map(record => {
+        const daysUntil = calcDaysUntil(record.date);
+        const isPlanned = (record.completed !== true) && (daysUntil !== null) && (daysUntil >= 0); // hoy o futuro
+        const badge = isPlanned
+          ? '<span class="badge badge-warning">Programado</span>'
+          : '<span class="badge badge-success">Realizado</span>';
+
+        const extraPlanned = (record.plannedDate && record.plannedDate !== record.date)
+          ? `<div class="details">📌 Programado originalmente: <b>${formatDateMX(record.plannedDate)}</b></div>`
+          : '';
+
+        const actions = isPlanned
+          ? `
+            <div class="row-actions" style="gap:.5rem;">
+              <button class="btn-mini" type="button" onclick="completeMaintenance(${record.id}, ${vehicleId})">Terminar</button>
+              <button class="btn-mini" type="button" onclick="editMaintenance(${record.id}, ${vehicleId})">Editar</button>
+              <button class="btn-mini danger" type="button" onclick="deleteMaintenance(${record.id}, ${vehicleId})">Eliminar</button>
+            </div>
+          `
+          : `
+            <div class="row-actions" style="gap:.5rem;">
+              <button class="btn-mini" type="button" onclick="editMaintenance(${record.id}, ${vehicleId})">Editar</button>
+              <button class="btn-mini danger" type="button" onclick="deleteMaintenance(${record.id}, ${vehicleId})">Eliminar</button>
+            </div>
+          `;
+
+        return `
+          <div class="maintenance-item" style="align-items:flex-start;">
+            <div class="item-info" style="flex:1; min-width:0;">
+              <h4 style="display:flex; align-items:center; gap:.6rem; flex-wrap:wrap;">
+                <span>${typeNames[record.type] || escapeHtml(record.type)}</span>
+                ${badge}
+              </h4>
+              <p>${escapeHtml(record.description)}</p>
+              <p>
+                📅 ${formatDateMX(record.date)}
+                ${record.cost ? ` • 💰 $${parseFloat(record.cost).toFixed(2)}` : ''}
+                ${record.km ? ` • 🛣️ ${escapeHtml(record.km)} km` : ''}
+              </p>
+              ${extraPlanned}
+            </div>
+            ${actions}
+          </div>
+        `;
+      }).join('');
+    }
+
+
+
+    
+
+    function editMaintenance(recordId, vehicleId){
+      const vid = vehicleId || (selectedVehicle ? selectedVehicle.id : null);
+      if(!vid) return;
+
+      // abrir panel + seleccionar
+      window.__openMaintVehicleId = vid;
+      selectedVehicle = vehicles.find(v => v.id === vid) || null;
+      document.getElementById('maintenanceForm').style.display = selectedVehicle ? 'block' : 'none';
+
+      const list = (maintenances && maintenances[vid]) ? maintenances[vid] : [];
+      const rec = list.find(m => m.id === recordId);
+      if(!rec) return;
+
+      // llenar formulario
+      document.getElementById('maintenanceType').value = rec.type || '';
+      document.getElementById('maintenanceDescription').value = rec.description || '';
+      document.getElementById('maintenanceDate').value = rec.date || '';
+      document.getElementById('maintenanceCost').value = rec.cost || '';
+      document.getElementById('maintenanceKm').value = rec.km || '';
+
+      editingMaintenance = { vehicleId: vid, recordId: recordId };
+      setMaintenanceFormMode(true);
+
+      renderMaintenanceVehicleSelector();
+
+      const form = document.getElementById('addMaintenanceForm');
+      if(form) form.scrollIntoView({ behavior:'smooth', block:'start' });
+    }
+
+    function completeMaintenance(recordId, vehicleId){
+      const vid = vehicleId || (selectedVehicle ? selectedVehicle.id : null);
+      if(!vid) return;
+
+      const list = (maintenances && maintenances[vid]) ? maintenances[vid] : [];
+      const idx = list.findIndex(m => m.id === recordId);
+      if(idx === -1) return;
+
+      if(!confirm('¿Marcar este mantenimiento como TERMINADO?')){
+        return;
+      }
+
+      const rec = list[idx] || {};
+      const today = new Date();
+      const todayISO = ymd(today);
+
+      // si estaba programado, guardamos fecha original
+      const planned = rec.plannedDate || rec.date || null;
+
+      list[idx] = {
+        ...rec,
+        completed: true,
+        plannedDate: planned,
+        date: todayISO
+      };
+
+      maintenances[vid] = list;
+      localStorage.setItem('maintenances', JSON.stringify(maintenances));
+
+      // salir de edición si aplica
+      if(editingMaintenance && editingMaintenance.vehicleId === vid && editingMaintenance.recordId === recordId){
+        editingMaintenance = { vehicleId: null, recordId: null };
+        const form = document.getElementById('addMaintenanceForm');
+        if(form) form.reset();
+        setMaintenanceFormMode(false);
+      }
+
+      renderMaintenancesFor(vid);
+      renderDashboard();
+      renderVehicles();
+      renderWorkCarsModule();
+      recalcWeekTotalsSoft();
+      showAlert('success', 'Mantenimiento marcado como terminado');
+    }
+
+function selectVehicleForMaintenance(id){
+      openAddMaintenanceFor(id);
     }
 
     document.getElementById('addMaintenanceForm').addEventListener('submit', function(e){
       e.preventDefault();
       if(!selectedVehicle) return;
 
+      const vid = selectedVehicle.id;
+
+      const type = document.getElementById('maintenanceType').value;
+      const description = document.getElementById('maintenanceDescription').value;
+      const date = document.getElementById('maintenanceDate').value;
+      const cost = document.getElementById('maintenanceCost').value;
+      const km = document.getElementById('maintenanceKm').value;
+
+      if(!maintenances[vid]) maintenances[vid] = [];
+
+      // si la fecha es hoy o pasado => se considera realizado
+      const daysUntil = calcDaysUntil(date);
+      const isDoneAuto = (daysUntil === null) ? false : (daysUntil <= 0);
+
+      // MODO EDICIÓN
+      if(editingMaintenance && editingMaintenance.vehicleId === vid && editingMaintenance.recordId){
+        const idx = maintenances[vid].findIndex(m => m.id === editingMaintenance.recordId);
+        if(idx !== -1){
+          const prev = maintenances[vid][idx] || {};
+          maintenances[vid][idx] = {
+            ...prev,
+            type,
+            description,
+            date,
+            cost,
+            km,
+            // si era programado y lo mueven a pasado/hoy, lo marcamos realizado
+            completed: (prev.completed === true) ? true : isDoneAuto
+          };
+        }
+
+        // salir de edición
+        editingMaintenance = { vehicleId: null, recordId: null };
+        setMaintenanceFormMode(false);
+        this.reset();
+        localStorage.setItem('maintenances', JSON.stringify(maintenances));
+
+        renderMaintenancesFor(vid);
+        renderDashboard();
+        renderVehicles();
+        renderWorkCarsModule();
+        recalcWeekTotalsSoft();
+        showAlert('success', 'Mantenimiento actualizado correctamente');
+        return;
+      }
+
+      // NUEVO REGISTRO
       const maintenance = {
         id: Date.now(),
-        type: document.getElementById('maintenanceType').value,
-        description: document.getElementById('maintenanceDescription').value,
-        date: document.getElementById('maintenanceDate').value,
-        cost: document.getElementById('maintenanceCost').value,
-        km: document.getElementById('maintenanceKm').value
+        type,
+        description,
+        date,
+        cost,
+        km,
+        completed: isDoneAuto,
+        plannedDate: null
       };
 
-      if(!maintenances[selectedVehicle.id]) maintenances[selectedVehicle.id] = [];
-      maintenances[selectedVehicle.id].push(maintenance);
+      maintenances[vid].push(maintenance);
       localStorage.setItem('maintenances', JSON.stringify(maintenances));
 
       this.reset();
-      renderMaintenances();
+      setMaintenanceFormMode(false);
+      renderMaintenancesFor(vid);
       renderDashboard();
       renderVehicles();
       renderWorkCarsModule();
       recalcWeekTotalsSoft();
-      showAlert('success', 'Mantenimiento registrado correctamente');
+      showAlert('success', (maintenance.completed ? 'Mantenimiento registrado (realizado)' : 'Mantenimiento registrado (programado)'));
     });
 
 
@@ -2901,12 +3243,17 @@ const cat = (vehicle.category === 'Trabajo')
       `).join('');
     }
 
-    function deleteMaintenance(id){
-      if(!selectedVehicle) return;
+    function deleteMaintenance(id, vehicleId){
+      const vid = vehicleId || (selectedVehicle ? selectedVehicle.id : null);
+      if(!vid) return;
+
       if(confirm('¿Eliminar este registro de mantenimiento?')){
-        maintenances[selectedVehicle.id] = maintenances[selectedVehicle.id].filter(m => m.id !== id);
+        maintenances[vid] = (maintenances[vid] || []).filter(m => m.id !== id);
         localStorage.setItem('maintenances', JSON.stringify(maintenances));
-        renderMaintenances();
+
+        // refrescos
+        renderMaintenancesFor(vid);
+        if(selectedVehicle && selectedVehicle.id === vid) renderMaintenances(); // legacy
         renderDashboard();
         renderVehicles();
         renderWorkCarsModule();
