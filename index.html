@@ -1726,6 +1726,70 @@ function setVerificationFormMode(isEdit){
     }
 
     // =========================
+    // Limpieza al borrar vehículo (evita "fantasmas" en dashboard)
+    // =========================
+    function purgeVehicleData(vehicleId){
+      const vid = String(vehicleId);
+
+      // Verificaciones
+      if(verifications && Object.prototype.hasOwnProperty.call(verifications, vid)){
+        delete verifications[vid];
+      }
+      // Mantenimientos
+      if(maintenances && Object.prototype.hasOwnProperty.call(maintenances, vid)){
+        delete maintenances[vid];
+      }
+      // Pagos (autos de trabajo)
+      if(workPayments && Object.prototype.hasOwnProperty.call(workPayments, vid)){
+        delete workPayments[vid];
+      }
+      // Choferes: desasignar
+      if(Array.isArray(drivers) && drivers.length){
+        let changed = false;
+        drivers = drivers.map(d => {
+          if(d && String(d.vehicleId) === vid){
+            changed = true;
+            return { ...d, vehicleId: "" };
+          }
+          return d;
+        });
+        if(changed) localStorage.setItem('drivers', JSON.stringify(drivers));
+      }
+
+      // UI state
+      if(selectedVehicle && String(selectedVehicle.id) === vid) selectedVehicle = null;
+      if(window.__openMaintVehicleId && String(window.__openMaintVehicleId) === vid) window.__openMaintVehicleId = null;
+      if(window.__openVeriVehicleId && String(window.__openVeriVehicleId) === vid) window.__openVeriVehicleId = null;
+
+      // Persist
+      localStorage.setItem('verifications', JSON.stringify(verifications));
+      localStorage.setItem('maintenances', JSON.stringify(maintenances));
+      localStorage.setItem('workPayments', JSON.stringify(workPayments));
+    }
+
+    // Limpia registros huérfanos (por si quedó basura en storage)
+    function cleanupOrphanData(){
+      const valid = new Set((vehicles || []).map(v => String(v.id)));
+      let changed = false;
+
+      const cleanObj = (objName, objRef) => {
+        if(!objRef) return;
+        for(const k of Object.keys(objRef)){
+          if(!valid.has(String(k))){
+            delete objRef[k];
+            changed = true;
+          }
+        }
+        if(changed) localStorage.setItem(objName, JSON.stringify(objRef));
+      };
+
+      cleanObj('verifications', verifications);
+      cleanObj('maintenances', maintenances);
+      cleanObj('workPayments', workPayments);
+    }
+
+
+    // =========================
     // Estatus vehicular
     // =========================
     // ✅ FIX: cálculo de días con fechas locales (sin UTC)
@@ -2305,19 +2369,18 @@ function setVerificationFormMode(isEdit){
 
     function deleteVehicle(id, event){
       event.stopPropagation();
-      if(confirm('¿Estás seguro de que deseas eliminar este vehículo?')){
-        vehicles = vehicles.filter(v => v.id !== id);
-        delete verifications[id];
-        delete maintenances[id];
-        delete workPayments[id];
+      if(confirm('¿Estás seguro de que deseas eliminar este vehículo?\n\nSe borrarán también verificaciones, mantenimientos y pagos asociados.')){
+        // 1) Purga hijos (evita mantenimientos/verificaciones "fantasma")
+        purgeVehicleData(id);
 
+        // 2) Borra vehículo
+        vehicles = vehicles.filter(v => String(v.id) !== String(id));
         localStorage.setItem('vehicles', JSON.stringify(vehicles));
-        localStorage.setItem('verifications', JSON.stringify(verifications));
-        localStorage.setItem('maintenances', JSON.stringify(maintenances));
-        localStorage.setItem('workPayments', JSON.stringify(workPayments));
 
-        if(selectedVehicle && selectedVehicle.id === id) selectedVehicle = null;
+        // 3) Limpieza extra por si quedara algo huérfano
+        cleanupOrphanData();
 
+        // 4) Refrescos
         renderVehicles();
         renderDashboard();
         renderWorkCarsModule();
@@ -4069,6 +4132,7 @@ function selectVehicleForMaintenance(id){
     migrateVehiclesCategoryIfMissing();
     migrateVerificationCompletedFields();
     cleanupWorkPaymentsOrphans();
+    cleanupOrphanData();
     setupCarPhotoUploader();
     setupEditCarPhotoUploader();
 
