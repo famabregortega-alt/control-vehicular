@@ -1493,10 +1493,10 @@
 <p>Sistema integral de gestión y mantenimiento de vehículos</p>
 </div>
 <nav class="main-nav">
-<button class="nav-btn active" onclick="showSection('dashboard', event)">Dashboard</button>
-<button class="nav-btn" onclick="showSection('vehicles', event)">Vehículos</button>
-<button class="nav-btn" onclick="showSection('verification', event)">Verificaciones &amp; Multas</button>
-<button class="nav-btn" onclick="showSection('maintenance', event)">Mantenimientos</button>
+<button class="nav-btn active" onclick="showSection('dashboard', event)">Inicio</button>
+<button class="nav-btn" onclick="showSection('vehicles', event)">Autos</button>
+<button class="nav-btn" onclick="showSection('verification', event)">Ver. &amp; Multas</button>
+<button class="nav-btn" onclick="showSection('maintenance', event)">Mant.</button>
 <button class="nav-btn" onclick="showSection('workcars', event)">Autos de trabajo</button>
 <button class="nav-btn" onclick="showSection('wallet', event)">Billetera</button>
 </nav>
@@ -1515,10 +1515,7 @@
 <div class="number" id="overdueCount">0</div>
 <div class="label">Verificaciones Vencidas</div>
 </div>
-<div class="stat-card">
-<div class="number" id="upcomingCount">0</div>
-<div class="label">Próximas (30 días)</div>
-</div>
+<div class="stat-card">  <div class="number" id="dashboardSaldo2026">$0.00</div>  <div id="upcomingCount" style="display:none">0</div>  <div class="label">SALDO DESDE 2026</div></div>
 </div>
 <div id="dashboardAlerts"></div>
 <div class="card">
@@ -4320,7 +4317,7 @@ ntent = overdueCount;
       }else{
         const items = vehicles.map(v => {
           const soon = getSoonestRecord(v.id);
-          const title = (v.plates && v.plates.trim()) ? v.plates.trim() : (v.name || 'Vehículo');
+          const title = (v.name && v.name.trim()) ? v.name.trim() : ((v.plates && v.plates.trim()) ? v.plates.trim() : 'Vehículo');
           if(!soon){
             return { v, title, daysUntil:null, date:null, type:null, info:{ pct:0, cls:'good', text:'Sin fechas' } };
           }
@@ -6640,6 +6637,51 @@ function selectVehicleForMaintenance(id){
       });
     }
   </script>
+
+
+<script>
+/* DASHBOARD_SALDO_DESDE_2026 */
+(function(){
+  function parseDateSafe(v){
+    if(!v) return null;
+    const d = new Date(v);
+    return isNaN(d.getTime()) ? null : d;
+  }
+
+  function calcularSaldoDesde2026(){
+    try{
+      const inicio = new Date("2026-01-01T00:00:00");
+      const tx = JSON.parse(localStorage.getItem("walletTx") || "[]"); // fuente real de Billetera
+      let saldo = 0;
+
+      for(const t of tx){
+        const fecha = parseDateSafe(t.date || t.fecha || t.createdAt || t.timestamp);
+        if(!fecha || fecha < inicio) continue;
+
+        const tipo = String(t.type || t.tipo || "").toLowerCase(); // 'in' | 'out'
+        const monto = Number(t.amount ?? t.monto ?? 0) || 0;
+
+        if(tipo === "in") saldo += monto;
+        else if(tipo === "out") saldo -= monto;
+      }
+
+      const el = document.getElementById("dashboardSaldo2026") || document.getElementById("dashboard");
+      if(el){
+        el.textContent = saldo.toLocaleString("es-MX",{style:"currency",currency:"MXN"});
+      }
+    }catch(e){
+      console.error("Saldo dashboard error:", e);
+    }
+  }
+
+  document.addEventListener("DOMContentLoaded", calcularSaldoDesde2026);
+  window.addEventListener("storage", (ev)=>{
+    if(ev.key === "walletTx") calcularSaldoDesde2026();
+  });
+  document.addEventListener("walletUpdated", calcularSaldoDesde2026);
+})();
+</script>
+
 </body>
 </html>
 
