@@ -258,7 +258,37 @@
       background:rgba(0,230,118,0.12);
     }
 
-    .alert{
+    
+    /* Botón tipo "ghost" (usado en Billetera: Nueva/Quitar categoría, Limpiar, etc.) */
+    .btn-ghost{
+      padding:.6rem 1rem;
+      border-radius:999px;
+      border:2px solid rgba(255,255,255,0.18);
+      background:rgba(255,255,255,0.06);
+      color:rgba(255,255,255,0.92);
+      font-weight:900;
+      cursor:pointer;
+      transition:.2s ease;
+      white-space:nowrap;
+    }
+    .btn-ghost:hover{
+      transform:translateY(-1px);
+      border-color:rgba(0,230,118,0.55);
+      background:rgba(0,230,118,0.10);
+      color:var(--accent);
+    }
+    .btn-ghost.danger{
+      border-color:rgba(239,68,68,0.40);
+      background:rgba(239,68,68,0.10);
+      color:#ffd7d7;
+    }
+    .btn-ghost.danger:hover{
+      border-color:rgba(239,68,68,0.80);
+      background:rgba(239,68,68,0.16);
+      color:#fff;
+    }
+
+.alert{
       padding:1rem 1.5rem;
       border-radius:8px;
       margin-bottom:1rem;
@@ -543,6 +573,15 @@
       line-height:1.2rem;
     }
     .vehicle-subtitle .bullet{ opacity:.85; }
+
+    .vehicle-value{
+      margin-top:.35rem;
+      font-weight:900;
+      color:var(--accent);
+      font-family:'Space Mono', monospace;
+      font-size:1.02rem;
+      letter-spacing:.2px;
+    }
     .vehicle-carimg{
       width:170px; height:95px;
       border-radius:18px;
@@ -973,7 +1012,7 @@
         z-index: 9998 !important;
 
         display: grid !important;
-        grid-template-columns: repeat(5, 1fr) !important;
+        grid-template-columns: repeat(6, 1fr) !important;
         animation: none !important;
       }
       .nav-btn{
@@ -1109,8 +1148,344 @@
     }
     .veri-panel .mini-btn:hover{ background:rgba(255,255,255,0.09); }
 
+/* ===== BILLETERA: Movimientos en 2 columnas + desplegable con scroll ===== */
+.wallet-columns{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:1rem;
+}
+.wallet-col{
+  background:rgba(255,255,255,0.03);
+  border:1px solid rgba(255,255,255,0.10);
+  border-radius:16px;
+  padding:1rem;
+}
+
+/* Desplegable */
+.wallet-drop{
+  border:1px solid rgba(255,255,255,0.10);
+  border-radius:14px;
+  background:rgba(0,0,0,0.12);
+  overflow:hidden;
+}
+.wallet-drop > summary{
+  list-style:none;
+  cursor:pointer;
+  padding:.8rem 1rem;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:.75rem;
+  user-select:none;
+}
+.wallet-drop > summary::-webkit-details-marker{ display:none; }
+
+.wallet-col-title{
+  display:flex;
+  align-items:center;
+  gap:.6rem;
+  font-family:'Space Mono', monospace;
+  font-weight:900;
+}
+.wallet-col-title .hint{
+  opacity:.85;
+  font-weight:900;
+  font-family:'DM Sans', sans-serif;
+  font-size:.9rem;
+}
+
+.wallet-caret{
+  opacity:.75;
+  font-weight:900;
+  font-size:1.05rem;
+  transition:transform .15s ease;
+}
+.wallet-drop[open] .wallet-caret{ transform:rotate(180deg); }
+
+/* Ventana con scroll (3-5 movimientos visibles aprox) */
+.wallet-scroll{
+  border-top:1px solid rgba(255,255,255,0.08);
+  padding:.85rem 1rem 1rem 1rem;
+  max-height:320px;
+  overflow:auto;
+}
+
+/* Compactar tarjetas SOLO dentro de billetera */
+.wallet-scroll .maintenance-list{ display:flex; flex-direction:column; gap:.75rem; }
+.wallet-scroll .maintenance-item{ padding:.85rem; border-radius:14px; }
+.wallet-scroll .item-info h4{ font-size:.95rem; }
+.wallet-scroll .item-info p{ font-size:.9rem; }
+.wallet-scroll .btn-mini{ padding:.42rem .8rem; border-radius:12px; font-size:.9rem; }
+
+@media(max-width:900px){
+  .wallet-columns{ grid-template-columns:1fr; }
+}
+
+/* ===== BILLETERA: Gráficas (mes / año) ===== */
+.wallet-charts-grid{
+  display:grid;
+  grid-template-columns: 1fr 1fr;
+  gap:1rem;
+}
+.wallet-chart-card{
+  background:rgba(255,255,255,0.03);
+  border:1px solid rgba(255,255,255,0.10);
+  border-radius:16px;
+  padding:1rem;
+  min-width:0;
+  overflow:hidden;
+}
+.wallet-chart-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:1rem;
+  margin-bottom:.6rem;
+}
+.wallet-chart-title{
+  font-family:'Space Mono', monospace;
+  font-weight:900;
+  color:#fff;
+}
+.wallet-chart-controls select{
+  padding:.55rem .75rem;
+  border-radius:10px;
+  border:1px solid rgba(255,255,255,0.14);
+  background:rgba(255,255,255,0.06);
+  color:#fff;
+  font-weight:900;
+  outline:none;
+}
+.wallet-chart-controls select:focus{
+  border-color:rgba(0,230,118,0.65);
+  box-shadow:0 0 0 3px rgba(0,230,118,0.12);
+}
+.wallet-chart-card canvas{
+  width:100%;
+  border-radius:12px;
+  background:rgba(0,0,0,0.12);
+  border:1px solid rgba(255,255,255,0.08);
+}
+
+.wallet-vehicles-total{
+  margin-top:.55rem;
+  font-weight:1000;
+  color:rgba(255,255,255,0.92);
+  display:flex;
+  justify-content:flex-end;
+  gap:.5rem;
+  font-family:'Space Mono', monospace;
+}
+.wallet-vehicles-total .sub{
+  font-family:'DM Sans', sans-serif;
+  font-weight:900;
+  color:rgba(255,255,255,0.70);
+}
+@media(max-width: 900px){
+  .wallet-charts-grid{ grid-template-columns: 1fr; }
+}
+
+/* ===== BILLETERA: Gráficas del Mes (3) + Año ===== */
+.wallet-month-charts{
+  display:grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap:1rem;
+}
+.wallet-month-charts > *{ min-width:0; }
+.wallet-chart-slot-empty{ min-height:1px; }
+
+.wallet-year-wrap{
+  display:block;
+}
+.wallet-chart-card{
+  background:rgba(255,255,255,0.03);
+  border:1px solid rgba(255,255,255,0.10);
+  border-radius:16px;
+  padding:1rem;
+}
+.wallet-chart-title{
+  font-family:'Space Mono', monospace;
+  font-weight:900;
+  color:#fff;
+  margin-bottom:.6rem;
+}
+.wallet-chart-card canvas{
+  width:100%;
+  border-radius:12px;
+  background:rgba(0,0,0,0.12);
+  border:1px solid rgba(255,255,255,0.08);
+}
+@media(max-width: 900px){
+  .wallet-month-charts{ grid-template-columns: 1fr; }
+}
+
+
+/* ===== BILLETERA: Selector de rango de meses ===== */
+.wallet-month-range{
+  display:flex;
+  align-items:flex-end;
+  gap:1rem;
+  flex-wrap:wrap;
+}
+
+/* ===== BILLETERA: Próximos pagos ===== */
+.hint{
+  margin-top:.35rem;
+  color: rgba(255,255,255,0.72);
+  font-size: 0.95rem;
+  line-height: 1.35;
+}
+.wallet-pay-item{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px;
+  padding:12px 14px;
+  border:1px solid rgba(255,255,255,0.08);
+  border-radius:14px;
+  background: rgba(0,0,0,0.18);
+  margin-bottom:10px;
+}
+.wallet-pay-meta{
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+  min-width: 0;
+}
+.wallet-pay-title{
+  font-weight:800;
+  color:#fff;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.wallet-pay-sub{
+  color: rgba(255,255,255,0.72);
+  font-size: 0.92rem;
+  display:flex;
+  gap:12px;
+  flex-wrap:wrap;
+}
+.wallet-pay-actions{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  justify-content:flex-end;
+}
+.btn-mini{
+  padding:8px 10px;
+  border-radius:12px;
+  font-weight:800;
+  border:1px solid rgba(255,255,255,0.12);
+  background: rgba(255,255,255,0.06);
+  color:#fff;
+  cursor:pointer;
+}
+.btn-mini:hover{ background: rgba(255,255,255,0.10); }
+.btn-mini.danger{ border-color: rgba(239,68,68,0.35); }
+.btn-mini.ok{ border-color: rgba(59,130,246,0.45); }
+.wallet-month-charts canvas{ width:100% !important; height:220px !important; display:block; }
+
+/* ===== BILLETERA: Ajuste proporcional (3 gráficas arriba) ===== */
+.wallet-month-charts{
+  display:grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  align-items: stretch;
+}
+.wallet-month-charts .wallet-chart-card{ min-width:0; }
+.wallet-month-charts canvas{ width:100% !important; height:220px !important; display:block; }
+
+/* ===== BILLETERA: Sección aparte (2 gráficas abajo centradas) ===== */
+.wallet-subtitle{
+  color: var(--text-primary);
+  font-weight: 800;
+  letter-spacing: .2px;
+  opacity: .95;
+}
+.wallet-month-charts-two{
+  display:grid;
+  grid-template-columns: repeat(2, minmax(0, 360px));
+  justify-content: center;   /* centra las 2 tarjetas */
+  gap: 16px;
+  margin-top: 10px;
+}
+.wallet-month-charts-two .wallet-chart-card{ min-width:0; }
+.wallet-month-charts-two canvas{ width:100% !important; height:220px !important; display:block; }
+@media(max-width: 900px){
+  .wallet-month-charts{ grid-template-columns: 1fr; }
+  .wallet-month-charts-two{ grid-template-columns: 1fr; }
+}
+
+/* ===== Paleta de colores (Vehículos) ===== */
+.color-palette{
+  display:grid;
+  grid-template-columns: repeat(10, minmax(26px, 1fr));
+  gap:10px;
+  margin-top:0.75rem;
+}
+@media (max-width: 720px){
+  .color-palette{ grid-template-columns: repeat(8, minmax(26px, 1fr)); }
+}
+.color-swatch{
+  width:100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 999px;
+  border: 2px solid rgba(255,255,255,0.18);
+  box-shadow: 0 6px 14px rgba(0,0,0,0.25);
+  cursor:pointer;
+  position:relative;
+  transition: transform .12s ease, border-color .12s ease, box-shadow .12s ease;
+}
+.color-swatch:hover{ transform: translateY(-1px); border-color: rgba(0,230,118,0.65); }
+.color-swatch.is-selected{
+  border-color: rgba(0,230,118,0.95);
+  box-shadow: 0 0 0 3px rgba(0,230,118,0.18), 0 10px 18px rgba(0,0,0,0.35);
+}
+.color-swatch::after{
+  content: attr(data-name);
+  position:absolute;
+  left:50%;
+  bottom:-30px;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  font-size: 11px;
+  font-weight: 800;
+  color: rgba(255,255,255,0.78);
+  opacity:0;
+  pointer-events:none;
+  transition: opacity .12s ease;
+}
+.color-swatch:hover::after{ opacity:1; }
+.color-palette-hint{
+  display:block;
+  margin-top:.4rem;
+  color:rgba(255,255,255,0.55);
+  font-weight:700;
+  font-size:12px;
+}
+
+/* ===== FIX: Scroll interno en modal (Editar Vehículo y cualquier modal largo) ===== */
+.modal-overlay{
+  /* permite que el contenedor tenga scroll si el modal es muy alto */
+  overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
+  align-items:flex-start; /* evita que quede centrado y recortado en pantallas chicas */
+}
+
+.modal{
+  /* scroll interno del contenido del modal */
+  max-height: calc(100svh - 2rem);
+  max-height: calc(100vh - 2rem); /* fallback */
+  overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
+  overscroll-behavior: contain;
+}
+
 </style>
-<link href="/favicon-32.png" rel="icon" sizes="32x32" type="image/png"/><link href="/icon-192.png" rel="icon" sizes="192x192" type="image/png"/><link href="/icon-512.png" rel="icon" sizes="512x512" type="image/png"/></head>
+
+<link href="/favicon-32.png" rel="icon" sizes="32x32" type="image/png"/><link href="/icon-192.png" rel="icon" sizes="192x192" type="image/png"/><link href="/icon-512.png" rel="icon" sizes="512x512" type="image/png"/>  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+</head>
 <body>
 <div class="container">
 <div class="header">
@@ -1123,6 +1498,7 @@
 <button class="nav-btn" onclick="showSection('verification', event)">Verificaciones &amp; Multas</button>
 <button class="nav-btn" onclick="showSection('maintenance', event)">Mantenimientos</button>
 <button class="nav-btn" onclick="showSection('workcars', event)">Autos de trabajo</button>
+<button class="nav-btn" onclick="showSection('wallet', event)">Billetera</button>
 </nav>
 <!-- DASHBOARD -->
 <section class="section active" id="dashboard">
@@ -1167,8 +1543,186 @@
 <div class="verification-list" id="upcomingMaintenances"></div>
 </div>
 </section>
+
+<!-- BILLETERA -->
+<section class="section" id="wallet"><div class="card">
+    <h2>📜 Movimientos</h2>
+    <div class="wallet-month-range" style="margin-top:1rem;">
+  <div class="form-group" style="max-width:220px;">
+    <label for="walletMonthFrom">Desde</label>
+    <input id="walletMonthFrom" type="month" />
+  </div>
+  <div class="form-group" style="max-width:220px;">
+    <label for="walletMonthTo">Hasta</label>
+    <input id="walletMonthTo" type="month" />
+  </div>
+</div>
+    <div id="walletTxList" class="maintenance-list"></div>
+  </div>
+
+<div class="card">
+  <h2>📊 Gráficas del Mes</h2>
+  <p style="color: var(--text-secondary); font-weight:800; margin-top:-0.75rem;">
+    Mes seleccionado (por defecto: mes actual) • Barras (Ingresos vs Egresos) • Circular (Ingresos vs Egresos) • Tendencia (Mes)
+  </p>
+
+  <!-- Fila 1: 3 gráficas (3 columnas) -->
+  <div class="wallet-month-charts wallet-month-charts--top" style="margin-top:1rem;">
+    <div class="wallet-chart-card">
+      <div class="wallet-chart-title">📈 Ingresos vs Egresos (Mes)</div>
+      <canvas id="walletChartMonthBars" height="220"></canvas>
+    </div>
+
+    <div class="wallet-chart-card">
+      <div class="wallet-chart-title">🍩 Ingresos vs Egresos (Mes)</div>
+      <canvas id="walletChartMonthDonut" height="220"></canvas>
+    </div>
+
+    <div class="wallet-chart-card">
+      <div class="wallet-chart-title">📉 Tendencia (Mes)</div>
+      <canvas id="walletChartTrend30" height="220"></canvas>
+    </div>
+  </div>
+
+  <!-- Fila 2: 2 gráficas ocupando 2 espacios (el 3er espacio queda vacío) -->
+  <div class="wallet-month-charts wallet-month-charts--bottom" style="margin-top:1rem;">
+    <div class="wallet-chart-card">
+      <div class="wallet-chart-title">🍩 Ingresos por Categoría (Mes)</div>
+      <canvas id="walletChartInCatsDonut" height="240" style="width:100%;height:240px;"></canvas>
+    </div>
+
+    <div class="wallet-chart-card">
+      <div class="wallet-chart-title">🍩 Egresos por Categoría (Mes)</div>
+      <canvas id="walletChartOutCatsDonut" height="240" style="width:100%;height:240px;"></canvas>
+    </div>
+
+        <div class="wallet-chart-card">
+      <div class="wallet-chart-title">🚗 Valor de Vehículos</div>
+      <canvas id="walletChartVehicleValues" height="320" style="width:100%;height:320px;"></canvas>
+      <div class="wallet-vehicles-total" id="walletVehiclesTotalValue">Total: $0.00</div>
+    </div>
+  </div>
+</div>
+
+  <div class="card">
+    <h2>💳 Billetera</h2>
+    <p style="color: var(--text-secondary); font-weight:800; margin-top:-0.75rem;">
+      Registra ingresos y egresos (gastos). Esto es independiente de los autos; es tu caja general.
+    </p>
+
+    <div class="gain-top" style="margin-top:1rem;">
+      <div class="kpi">
+        <div class="k-title">Saldo</div>
+        <div class="k-val" id="walletBalance">$0.00</div>
+      </div>
+      <div class="kpi">
+        <div class="k-title">Ingresos</div>
+        <div class="k-val" id="walletIn">$0.00</div>
+      </div>
+      <div class="kpi">
+        <div class="k-title">Egresos</div>
+        <div class="k-val" id="walletOut">$0.00</div>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="card">
+    <h2>➕ Agregar movimiento</h2>
+    <form id="walletForm">
+      <div class="form-group">
+        <label for="walletType">Tipo</label>
+        <select id="walletType" required>
+          <option value="">Seleccionar...</option>
+          <option value="in">Ingreso</option>
+          <option value="out">Egreso</option>
+        </select>
+      </div>
+<div class="form-group" id="walletCategoryWrap" style="display:none;">
+  <label for="walletCategory">CATEGORÍA</label>
+  <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+    <select id="walletCategory" style="flex:1; min-width:260px;">
+      <option value="">Seleccionar...</option>
+    </select>
+    <button type="button" class="btn-ghost" id="walletCategoryAddBtn">➕ Nueva categoría</button>
+    <button type="button" class="btn-ghost danger" id="walletCategoryDelBtn">🗑 Quitar categoría</button>
+  </div>
+</div>
+
+
+
+      <div class="form-group">
+        <label for="walletDate">Fecha</label>
+        <input id="walletDate" type="date" required />
+      </div>
+
+      <div class="form-group">
+        <label for="walletAmount">Monto</label>
+        <input id="walletAmount" type="number" step="0.01" placeholder="$0.00" required />
+      </div>
+
+      <div class="form-group">
+        <label for="walletNote">Concepto / Nota</label>
+        <textarea id="walletNote" placeholder="Ej: Pago chofer, gasolina, refacción..."></textarea>
+      </div>
+
+      <button class="btn btn-primary" type="submit">GUARDAR MOVIMIENTO</button>
+    </form>
+  </div>
+
+<div class="card">
+  <h2>🗓 Próximos pagos</h2>
+  <p class="hint">Registra pagos futuros. Al marcar <b>Terminar</b>, se crea un <b>Egreso</b> en Movimientos con la fecha de hoy.</p>
+
+  <div class="grid-3" style="margin-top:1rem;">
+    <div class="form-group">
+      <label for="walletPayDue">Fecha programada</label>
+      <input id="walletPayDue" type="date" />
+    </div>
+
+
+    <div class="form-group">
+      <label for="walletPayAmount">Monto</label>
+      <input id="walletPayAmount" type="number" inputmode="decimal" placeholder="0.00" />
+    </div>
+
+    <div class="form-group">
+      <label for="walletPayCategory">Categoría</label>
+      <select id="walletPayCategory">
+        <option value="">Seleccionar...</option>
+      </select>
+      <small style="display:block; margin-top:.6rem; color:rgba(255,255,255,0.65); font-weight:700;">
+        Tip: esta categoría se aplicará cuando marques <b>Terminar</b> (se creará el egreso con esa categoría).
+      </small>
+    </div>
+
+    <div class="form-group" style="grid-column:1/-1;">
+      <label for="walletPayNote">Concepto / Nota</label>
+      <textarea id="walletPayNote" rows="2" placeholder="Ej: Mantenimiento, renta, seguro..."></textarea>
+    </div>
+  </div>
+
+  <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:12px;">
+    <button class="btn-primary" id="walletPaySaveBtn" type="button">GUARDAR PAGO</button>
+    <button class="btn-ghost" id="walletPayClearBtn" type="button">LIMPIAR</button>
+  </div>
+
+  <div id="walletPayList" style="margin-top:16px;"></div>
+</div>
+
+
+  
+</section>
+
 <!-- VEHÍCULOS -->
 <section class="section" id="vehicles">
+<div class="card">
+<div class="vehicles-header">
+<h2 style="margin:0;">🚙 Mis Vehículos</h2>
+<button class="add-pill" onclick="scrollToAddVehicle()">+ Agregar</button>
+</div>
+<div class="vehicle-list" id="vehiclesList"></div>
+</div>
 <div class="card" id="addVehicleCard">
 <h2>➕ Agregar Nuevo Vehículo</h2>
 <form id="vehicleForm">
@@ -1189,34 +1743,51 @@
 </div>
 <div class="form-group">
 <label for="carColor">Color</label>
-<select id="carColor" onchange="toggleCustomColor('carColor','carColorOther')" required="">
+<select id="carColor" onchange="toggleCustomColor('carColor','carColorOther')" required="" style="display:none;">
 <option value="">Seleccionar...</option>
-<option>Negro</option>
 <option>Blanco</option>
-<option>Gris</option>
+<option>Blanco Perlado</option>
 <option>Plata</option>
+<option>Plata Metálico</option>
+<option>Gris Claro</option>
+<option>Gris Obscuro</option>
+<option>Gris Oxford</option>
+<option>Negro</option>
+<option>Negro Mate</option>
 <option>Rojo</option>
+<option>Rojo Vino</option>
 <option>Azul</option>
+<option>Azul Marino</option>
 <option>Verde</option>
+<option>Verde Olivo</option>
 <option>Amarillo</option>
 <option>Naranja</option>
 <option>Café</option>
-<option>Vino</option>
+<option>Dorado</option>
 <option>Morado</option>
 <option value="__otro__">Otro…</option>
 </select>
+<div class="color-palette" data-select="carColor" data-other="carColorOther"></div>
 <input id="carColorOther" placeholder="Escribe el color..." style="display:none; margin-top:0.75rem;" type="text"/>
+<small class="color-palette-hint">Tip: elige un tono que se distinga (ej. Gris Claro vs Gris Obscuro).</small>
 </div>
 <div class="form-group">
 <label for="carPlates">Placas</label>
 <input id="carPlates" placeholder="ABC-123-D" type="text"/>
+</div>
+<div class="form-group">
+<label for="carValue">Valor del vehículo ($)</label>
+<input id="carValue" type="number" step="0.01" placeholder="Ej: 150000" />
+<small style="display:block; margin-top:.35rem; color:rgba(255,255,255,0.65); font-weight:700;">
+  Tip: puedes poner el valor de compra o el valor actual estimado.
+</small>
 </div>
 <!-- FOTO DEL VEHÍCULO (opcional) -->
 <div class="form-group">
 <label for="carPhoto">Fotografía del vehículo (opcional)</label>
 <input accept="image/*" id="carPhoto" type="file"/>
 <div id="carPhotoPreviewWrap" style="display:none; margin-top:0.75rem;">
-<img alt="Vista previa" id="carPhotoPreview" style="width:100%;max-height:220px;object-fit:cover;border-radius:12px;border:1px solid rgba(255,255,255,0.12);background:rgba(0,0,0,0.15);"/>
+<img alt="Vista previa" id="carPhotoPreview" style="width:100%;max-height:240px;object-fit:cover;border-radius:12px;border:1px solid rgba(255,255,255,0.12);background:rgba(0,0,0,0.15);"/>
 <button class="btn btn-secondary" onclick="clearCarPhoto()" style="margin-top:.6rem;" type="button">Quitar foto</button>
 </div>
 <small style="display:block; margin-top:.6rem; color:rgba(255,255,255,0.65); font-weight:700;">
@@ -1225,13 +1796,6 @@
 </div>
 <button class="btn btn-primary" type="submit">Agregar Vehículo</button>
 </form>
-</div>
-<div class="card">
-<div class="vehicles-header">
-<h2 style="margin:0;">🚙 Mis Vehículos</h2>
-<button class="add-pill" onclick="scrollToAddVehicle()">+ Agregar</button>
-</div>
-<div class="vehicle-list" id="vehiclesList"></div>
 </div>
 </section>
 <!-- VERIFICACIONES -->
@@ -1522,34 +2086,51 @@
 </div>
 <div class="form-group">
 <label for="editCarColor">Color</label>
-<select id="editCarColor" onchange="toggleCustomColor('editCarColor','editCarColorOther')" required="">
+<select id="editCarColor" onchange="toggleCustomColor('editCarColor','editCarColorOther')" required="" style="display:none;">
 <option value="">Seleccionar...</option>
-<option>Negro</option>
 <option>Blanco</option>
-<option>Gris</option>
+<option>Blanco Perlado</option>
 <option>Plata</option>
+<option>Plata Metálico</option>
+<option>Gris Claro</option>
+<option>Gris Obscuro</option>
+<option>Gris Oxford</option>
+<option>Negro</option>
+<option>Negro Mate</option>
 <option>Rojo</option>
+<option>Rojo Vino</option>
 <option>Azul</option>
+<option>Azul Marino</option>
 <option>Verde</option>
+<option>Verde Olivo</option>
 <option>Amarillo</option>
 <option>Naranja</option>
 <option>Café</option>
-<option>Vino</option>
+<option>Dorado</option>
 <option>Morado</option>
 <option value="__otro__">Otro…</option>
 </select>
+<div class="color-palette" data-select="editCarColor" data-other="editCarColorOther"></div>
 <input id="editCarColorOther" placeholder="Escribe el color..." style="display:none; margin-top:0.75rem;" type="text"/>
+<small class="color-palette-hint">Tip: elige un tono que se distinga (ej. Gris Claro vs Gris Obscuro).</small>
 </div>
 <div class="form-group">
 <label for="editCarPlates">Placas</label>
 <input id="editCarPlates" type="text"/>
+</div>
+<div class="form-group">
+<label for="editCarValue">Valor del vehículo ($)</label>
+<input id="editCarValue" type="number" step="0.01" placeholder="Ej: 150000"/>
+<small style="display:block; margin-top:.35rem; color:rgba(255,255,255,0.65); font-weight:700;">
+  Tip: puedes poner el valor de compra o el valor actual estimado.
+</small>
 </div>
 <!-- FOTO DEL VEHÍCULO (opcional) -->
 <div class="form-group">
 <label for="editCarPhoto">Fotografía del vehículo (opcional)</label>
 <input accept="image/*" id="editCarPhoto" type="file"/>
 <div id="editCarPhotoPreviewWrap" style="display:none; margin-top:0.75rem;">
-<img alt="Vista previa" id="editCarPhotoPreview" style="width:100%;max-height:220px;object-fit:cover;border-radius:12px;border:1px solid rgba(255,255,255,0.12);background:rgba(0,0,0,0.15);"/>
+<img alt="Vista previa" id="editCarPhotoPreview" style="width:100%;max-height:240px;object-fit:cover;border-radius:12px;border:1px solid rgba(255,255,255,0.12);background:rgba(0,0,0,0.15);"/>
 <button class="btn btn-secondary" onclick="clearEditCarPhoto()" style="margin-top:.6rem;" type="button">Quitar foto</button>
 </div>
 <small style="display:block; margin-top:.6rem; color:rgba(255,255,255,0.65); font-weight:700;">
@@ -1568,9 +2149,31 @@
     // Storage base
     // =========================
     let vehicles = JSON.parse(localStorage.getItem('vehicles')) || [];
+    // Normaliza vehículos antiguos: agrega value si no existe
+    vehicles = vehicles.map(v => ({...v, value: Number(v.value) || 0}));
     let selectedVehicle = null;
     let verifications = JSON.parse(localStorage.getItem('verifications')) || {};
     let maintenances = JSON.parse(localStorage.getItem('maintenances')) || {};
+
+    // =========================
+    // Limpieza de datos huérfanos (evita registros fantasma)
+    // =========================
+    function cleanOrphanMaintenances(){
+      const validIds = new Set((vehicles || []).map(v => String(v.id)));
+      let changed = false;
+
+      Object.keys(maintenances || {}).forEach(id => {
+        if(!validIds.has(String(id))){
+          delete maintenances[id];
+          changed = true;
+        }
+      });
+
+      if(changed){
+        localStorage.setItem('maintenances', JSON.stringify(maintenances));
+      }
+    }
+
 
     // Estado de edición de Verificaciones/Tenencias/Multas
     let editingVerification = { vehicleId: null, recordId: null };
@@ -1584,6 +2187,1525 @@
     
     // drivers = [{id, name, phone, email, address, vehicleId, startDate, endDate, notes, refName, refPhone}]
     let drivers = JSON.parse(localStorage.getItem('drivers')) || [];
+    // =========================
+    // Billetera (ingresos / egresos)
+    // =========================
+    // walletTx = [{id, type:'in'|'out', date:'YYYY-MM-DD', amount:number, note:string}]
+    let walletTx = JSON.parse(localStorage.getItem('walletTx')) || [];
+
+    function saveWallet(){
+      localStorage.setItem('walletTx', JSON.stringify(walletTx));
+    }
+
+    // =========================
+    // Sync Autos de Trabajo -> Billetera
+    // =========================
+    function _walletFindTxIndexById(txId){
+      return (walletTx || []).findIndex(t => String(t.id) === String(txId));
+    }
+    function _walletUpsertTx(txId, tx){
+      if(!walletTx) walletTx = [];
+      const idx = _walletFindTxIndexById(txId);
+      const payload = { ...tx, id: txId };
+      if(idx === -1){
+        walletTx.push(payload);
+      }else{
+        walletTx[idx] = { ...walletTx[idx], ...payload };
+      }
+      saveWallet();
+    }
+    function _walletRemoveTx(txId){
+      if(!walletTx) return;
+      const idx = _walletFindTxIndexById(txId);
+      if(idx !== -1){
+        walletTx.splice(idx,1);
+        saveWallet();
+      }
+    }
+    function _vehicleTitleById(vehicleId){
+      const v = (vehicles || []).find(x => String(x.id) === String(vehicleId));
+      if(!v) return String(vehicleId || '');
+      const plate = (v.plates && String(v.plates).trim()) ? String(v.plates).trim() : '';
+      const name  = (v.name && String(v.name).trim()) ? String(v.name).trim() : '';
+      return name || plate || String(vehicleId || '');
+    }
+
+    // Upsert de pago semanal (Ingreso -> categoría "Autos")
+    function syncWorkPaymentToWallet(vehicleId, weekStartISO, amountOrNull){
+      const txId = `wp:${vehicleId}:${weekStartISO}`;
+      const amt = safeNumber(amountOrNull);
+      if(!amountOrNull || amt <= 0){
+        _walletRemoveTx(txId);
+        return;
+      }
+      const veh = _vehicleTitleById(vehicleId);
+      const date = normalizeISODateString(weekStartISO) || weekStartISO;
+      _walletUpsertTx(txId, {
+        type: 'in',
+        category: 'Autos',
+        date,
+        amount: amt,
+        note: `Pago chofer (${veh}) - Semana ${date}`
+      });
+    }
+
+    // Upsert de mantenimiento (Egreso -> categoría "Mantenimientos autos") SOLO si está completado
+    function syncMaintenanceToWallet(vehicleId, maintenanceObj){
+      if(!maintenanceObj) return;
+      const mid = maintenanceObj.id;
+      const txId = `mt:${vehicleId}:${mid}`;
+      const amt = safeNumber(maintenanceObj.cost);
+
+      // Si no hay monto válido, quitamos el movimiento
+      if(amt <= 0){
+        _walletRemoveTx(txId);
+        return;
+      }
+
+      const veh = _vehicleTitleById(vehicleId);
+
+      // Fecha: si tiene date úsala; si no, plannedDate; si no, hoy
+      const rawDate = maintenanceObj.date || maintenanceObj.plannedDate || ymd(new Date());
+      const date = normalizeISODateString(rawDate) || rawDate;
+
+      const desc = (maintenanceObj.description && String(maintenanceObj.description).trim()) ? String(maintenanceObj.description).trim() : '';
+      const type = (maintenanceObj.type && String(maintenanceObj.type).trim()) ? String(maintenanceObj.type).trim() : 'Mantenimiento';
+      const extra = desc ? ` - ${desc}` : '';
+
+      const status = (maintenanceObj.completed === true) ? 'Realizado' : 'Programado';
+
+      _walletUpsertTx(txId, {
+        type: 'out',
+        category: 'Mantenimientos autos',
+        date,
+        amount: amt,
+        note: `Mantenimiento (${veh}) - ${type}${extra} [${status}]`
+      });
+    }
+
+    // Backfill / Re-sync completo (Autos de trabajo -> Billetera)
+    // Esto asegura que pagos/mantenimientos YA existentes se reflejen sin tener que editarlos.
+    function syncAllWorkCarsToWallet(){
+      try{
+        // Sync de pagos semanales (Ingresos)
+        if(workPayments){
+          for(const vid of Object.keys(workPayments)){
+            const weeksObj = workPayments[vid] || {};
+            for(const wk of Object.keys(weeksObj)){
+              syncWorkPaymentToWallet(vid, wk, weeksObj[wk]);
+            }
+          }
+        }
+
+        // Sync de mantenimientos (Egresos)
+        if(maintenances){
+          for(const vid of Object.keys(maintenances)){
+            const list = maintenances[vid] || [];
+            if(Array.isArray(list)){
+              for(const m of list){
+                syncMaintenanceToWallet(vid, m);
+              }
+            }
+          }
+        }
+      }catch(_e){}
+    }
+
+
+    function calcWallet(){
+      const inSum = (walletTx || []).filter(t=>t.type==='in').reduce((a,b)=>a+safeNumber(b.amount),0);
+      const outSum = (walletTx || []).filter(t=>t.type==='out').reduce((a,b)=>a+safeNumber(b.amount),0);
+      const balance = inSum - outSum;
+      return { inSum, outSum, balance };
+    }
+
+    /* ===== BILLETERA: Próximos pagos (recordatorios) ===== */
+let walletUpcoming = [];
+
+function walletLoadUpcoming(){
+  try{
+    walletUpcoming = JSON.parse(localStorage.getItem('walletUpcoming') || '[]') || [];
+    if(!Array.isArray(walletUpcoming)) walletUpcoming = [];
+  }catch(e){ walletUpcoming = []; }
+}
+
+function walletSaveUpcoming(){
+  localStorage.setItem('walletUpcoming', JSON.stringify(walletUpcoming || []));
+}
+
+function walletFmtDateES(iso){
+  // iso: YYYY-MM-DD
+  if(!iso || String(iso).length < 10) return '';
+  const [y,m,d] = iso.split('-').map(x=>parseInt(x,10));
+  if(!y || !m || !d) return iso;
+  const meses = ["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"];
+  return `${d} de ${meses[m-1]} de ${y}`;
+}
+
+function walletISOToday(){
+  const now = new Date();
+  const y = now.getFullYear();
+  const m = String(now.getMonth()+1).padStart(2,'0');
+  const d = String(now.getDate()).padStart(2,'0');
+  return `${y}-${m}-${d}`;
+}
+
+function walletClearUpcomingForm(){
+  const due = document.getElementById('walletPayDue');
+  const amt = document.getElementById('walletPayAmount');
+  const cat = document.getElementById('walletPayCategory');
+  const note = document.getElementById('walletPayNote');
+  if(due) due.value = '';
+  if(amt) amt.value = '';
+  if(cat) cat.value = '';
+  if(note) note.value = '';
+  delete document.body.dataset.walletPayEditId;
+}
+
+function renderWalletUpcoming(){
+  const box = document.getElementById('walletPayList');
+  if(!box) return;
+
+  // sort by due date asc
+  const items = (walletUpcoming || []).slice().sort((a,b)=> String(a.due||'').localeCompare(String(b.due||'')));
+
+  if(items.length === 0){
+    box.innerHTML = `<div style="padding:10px 0; color: rgba(255,255,255,0.65);">No hay pagos programados.</div>`;
+    return;
+  }
+
+  box.innerHTML = items.map(it=>{
+    const due = walletFmtDateES(it.due);
+    const amt = money(safeNumber(it.amount));
+    const note = String(it.note||'').trim() || 'Pago programado';
+    return `
+      <div class="wallet-pay-item">
+        <div class="wallet-pay-meta">
+          <div class="wallet-pay-title">${escapeHtml(note)}</div>
+          <div class="wallet-pay-sub">
+            <span>📅 ${escapeHtml(due || it.due || '')}</span>
+            <span>💳 ${escapeHtml(amt)}</span>
+            ${it.category ? `<span>🏷️ ${escapeHtml(String(it.category))}</span>` : ''}
+          </div>
+        </div>
+        <div class="wallet-pay-actions">
+          <button class="btn-mini" data-pay-act="edit" data-pay-id="${it.id}">Editar</button>
+          <button class="btn-mini ok" data-pay-act="done" data-pay-id="${it.id}">Terminar</button>
+          <button class="btn-mini danger" data-pay-act="del" data-pay-id="${it.id}">Eliminar</button>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  // bind actions
+  box.querySelectorAll('button[data-pay-act]').forEach(btn=>{
+    btn.onclick = (e)=>{
+      if(e) e.preventDefault();
+      const act = btn.getAttribute('data-pay-act');
+      const id = btn.getAttribute('data-pay-id');
+      if(!id) return;
+
+      const idx = (walletUpcoming||[]).findIndex(x=> String(x.id) === String(id));
+      if(idx < 0) return;
+
+      if(act === 'del'){
+        walletUpcoming.splice(idx,1);
+        walletSaveUpcoming();
+        renderWalletUpcoming();
+        return;
+      }
+
+      if(act === 'edit'){
+        const it = walletUpcoming[idx];
+        const due = document.getElementById('walletPayDue');
+        const amt = document.getElementById('walletPayAmount');
+        const note = document.getElementById('walletPayNote');
+        const cat = document.getElementById('walletPayCategory');
+        if(due) due.value = String(it.due||'');
+        if(amt) amt.value = String(it.amount||'');
+        if(note) note.value = String(it.note||'');
+        walletPopulateUpcomingCategorySelect();
+        if(cat) cat.value = String(it.category||'');
+        document.body.dataset.walletPayEditId = String(it.id);
+        // scroll suave al formulario
+        due?.scrollIntoView({behavior:'smooth', block:'center'});
+        return;
+      }
+
+      if(act === 'done'){
+        // Crear egreso en movimientos con fecha de hoy (fecha de término)
+        const it = walletUpcoming[idx];
+        const doneDate = walletISOToday();
+
+        walletTx = walletTx || [];
+        walletTx.push({
+          id: String(Date.now()),
+          type: 'out',
+          amount: safeNumber(it.amount),
+          note: String(it.note||'').trim() || 'Pago',
+          category: String(it.category||'').trim() || 'Otros',
+          date: doneDate
+        });
+
+        // borrar el pago programado
+        walletUpcoming.splice(idx,1);
+
+        saveWallet();
+        walletSaveUpcoming();
+
+        // refrescar UI billetera
+        renderWalletList();
+        renderWalletCharts();
+        renderWalletUpcoming();
+        return;
+      }
+    };
+  });
+}
+
+/* ===== BILLETERA: Categorías (Ingresos/Egresos) ===== */
+let walletCatsIn = [];
+let walletCatsOut = [];
+
+const WALLET_CATS_IN_DEFAULT = [
+  "Marina",
+  "Autos",
+  "Empresa Computadoras",
+  "Empresa ciberseguridad",
+  "Futbol",
+  "Ventas autos",
+  "Otros"
+];
+
+const WALLET_CATS_OUT_DEFAULT = [
+  "Gasto Quincena",
+  "Mantenimientos autos",
+  "Casa CDMX",
+  "Casa cuernavaca",
+  "Escuela",
+  "Mis Gastos",
+  "Gasolina",
+  "Viajes"
+];
+
+function walletLoadCategories(){
+  try{
+    walletCatsIn = JSON.parse(localStorage.getItem('walletCatsIn') || '[]') || [];
+    walletCatsOut = JSON.parse(localStorage.getItem('walletCatsOut') || '[]') || [];
+  }catch(_){
+    walletCatsIn = [];
+    walletCatsOut = [];
+  }
+  if(!Array.isArray(walletCatsIn) || walletCatsIn.length === 0) walletCatsIn = WALLET_CATS_IN_DEFAULT.slice();
+  if(!Array.isArray(walletCatsOut) || walletCatsOut.length === 0) walletCatsOut = WALLET_CATS_OUT_DEFAULT.slice();
+
+  // limpiar duplicados / vacíos
+  walletCatsIn = Array.from(new Set(walletCatsIn.map(x=>String(x||'').trim()).filter(Boolean)));
+  walletCatsOut = Array.from(new Set(walletCatsOut.map(x=>String(x||'').trim()).filter(Boolean)));
+}
+
+function walletSaveCategories(){
+  localStorage.setItem('walletCatsIn', JSON.stringify(walletCatsIn || []));
+  localStorage.setItem('walletCatsOut', JSON.stringify(walletCatsOut || []));
+}
+
+
+function walletPopulateUpcomingCategorySelect(){
+  const sel = document.getElementById('walletPayCategory');
+  if(!sel) return;
+
+  // Asegurar categorías cargadas
+  if(!Array.isArray(walletCatsOut) || walletCatsOut.length === 0){
+    try{ walletLoadCategories(); }catch(e){}
+  }
+
+  const current = String(sel.value || '').trim();
+  const opts = ['<option value="">Seleccionar...</option>']
+    .concat((walletCatsOut || []).map(c=>{
+      const v = String(c||'').trim();
+      if(!v) return '';
+      const esc = escapeHtml(v);
+      return `<option value="${esc}">${esc}</option>`;
+    }).filter(Boolean));
+
+  sel.innerHTML = opts.join('');
+  if(current){
+    // re-seleccionar si todavía existe
+    const exists = (walletCatsOut || []).some(c=>String(c||'').trim() === current);
+    sel.value = exists ? current : '';
+  }
+}
+
+function walletPopulateCategorySelect(){
+  const wrap = document.getElementById('walletCategoryWrap');
+  const typeSel = document.getElementById('walletType');
+  const catSel = document.getElementById('walletCategory');
+  if(!wrap || !typeSel || !catSel) return;
+
+  const t = String(typeSel.value || '').trim(); // 'in' | 'out'
+  if(t !== 'in' && t !== 'out'){
+    wrap.style.display = 'none';
+    catSel.innerHTML = '<option value="">Seleccionar...</option>';
+    return;
+  }
+
+  wrap.style.display = '';
+  const arr = (t === 'in') ? walletCatsIn : walletCatsOut;
+  const current = catSel.value || '';
+
+  catSel.innerHTML = '<option value="">Seleccionar...</option>' + arr.map(c=>{
+    const esc = escapeHtml(c);
+    return `<option value="${esc}">${esc}</option>`;
+  }).join('');
+
+  if(current && arr.includes(current)) catSel.value = current;
+}
+
+function walletAddNewCategory(){
+  const t = String(document.getElementById('walletType')?.value || '').trim();
+  if(t !== 'in' && t !== 'out'){
+    showAlert('warning','Primero selecciona el tipo (Ingreso/Egreso).');
+    return;
+  }
+  const name = prompt('Nombre de la nueva categoría:');
+  if(!name) return;
+  const cat = String(name).trim();
+  if(!cat) return;
+
+  if(t === 'in'){
+    if(!walletCatsIn.includes(cat)) walletCatsIn.push(cat);
+  }else{
+    if(!walletCatsOut.includes(cat)) walletCatsOut.push(cat);
+  }
+  walletSaveCategories();
+  walletPopulateCategorySelect();
+  walletPopulateUpcomingCategorySelect();
+  const catSel = document.getElementById('walletCategory');
+  if(catSel) catSel.value = cat;
+}
+
+
+function walletRemoveCategory(){
+  const t = String(document.getElementById('walletType')?.value || '').trim();
+  const catSel = document.getElementById('walletCategory');
+  const raw = String(catSel?.value || '').trim();
+
+  if(t !== 'in' && t !== 'out'){
+    showAlert('warning','Primero selecciona el tipo (Ingreso/Egreso).');
+    return;
+  }
+  if(!raw){
+    showAlert('warning','Selecciona la categoría que deseas quitar.');
+    return;
+  }
+
+  // Aviso si existen movimientos con esa categoría
+  const usedCount = (walletTx || []).filter(x => String(x?.type||'').trim()===t && String(x?.category||'').trim()===raw).length;
+  const msg = usedCount > 0
+    ? `Vas a quitar la categoría "${raw}".\n\n⚠️ Nota: Hay ${usedCount} movimiento(s) con esa categoría (no se borrarán, solo ya no aparecerá en el selector).\n\n¿Deseas continuar?`
+    : `¿Seguro que quieres quitar la categoría "${raw}"?`;
+
+  if(!confirm(msg)) return;
+
+  if(t === 'in'){
+    walletCatsIn = (walletCatsIn || []).filter(c => String(c).trim() !== raw);
+  }else{
+    walletCatsOut = (walletCatsOut || []).filter(c => String(c).trim() !== raw);
+  }
+
+  walletSaveCategories();
+  walletPopulateCategorySelect();
+  if(catSel) catSel.value = '';
+
+  showAlert('success','Categoría eliminada del selector.');
+}
+
+function renderWallet(){
+  walletLoadCategories();
+walletLoadUpcoming();
+  // Cargar categorías de Egresos en Próximos pagos
+  walletPopulateUpcomingCategorySelect();
+// KPIs
+  const w = calcWallet();
+  const elBal = document.getElementById('walletBalance');
+  const elIn  = document.getElementById('walletIn');
+  const elOut = document.getElementById('walletOut');
+  if(elBal) elBal.textContent = money(w.balance);
+  if(elIn)  elIn.textContent  = money(w.inSum);
+  if(elOut) elOut.textContent = money(w.outSum);
+
+  // default date hoy
+  const wd = document.getElementById('walletDate');
+  if(wd && !wd.value){
+    const now = new Date();
+    wd.value = ymd(now);
+  }
+
+  // Calendario por rango de meses (multi-año)
+  const wmFrom = document.getElementById('walletMonthFrom');
+  const wmTo = document.getElementById('walletMonthTo');
+  if(wmFrom && wmTo){
+    const now = new Date();
+    const mm = String(now.getMonth()+1).padStart(2,'0');
+    const cur = `${now.getFullYear()}-${mm}`;
+
+    if(!wmFrom.value) wmFrom.value = cur;
+    if(!wmTo.value) wmTo.value = wmFrom.value || cur;
+
+    const normalizeRange = ()=>{
+      if(wmFrom.value && wmTo.value && wmFrom.value > wmTo.value){
+        wmTo.value = wmFrom.value;
+      }
+    };
+
+    wmFrom.onchange = ()=>{
+      normalizeRange();
+      renderWalletList();
+      renderWalletCharts();
+    };
+    wmTo.onchange = ()=>{
+      normalizeRange();
+      renderWalletList();
+      renderWalletCharts();
+    };
+  }
+
+renderWalletList();
+  renderWalletCharts();
+  renderWalletDashboardCard();
+
+// Próximos pagos: defaults + botones
+const payDue = document.getElementById('walletPayDue');
+if(payDue && !payDue.value) payDue.value = walletISOToday();
+
+const paySave = document.getElementById('walletPaySaveBtn');
+const payClear = document.getElementById('walletPayClearBtn');
+
+if(paySave){
+  paySave.onclick = (e)=>{
+      if(e) e.preventDefault();
+    const due = document.getElementById('walletPayDue')?.value || '';
+    const amount = safeNumber(document.getElementById('walletPayAmount')?.value || 0);
+    const note = String(document.getElementById('walletPayNote')?.value || '').trim();
+    const category = String(document.getElementById('walletPayCategory')?.value || '').trim();
+
+    if(!due){ alert('Selecciona la fecha programada.'); return; }
+    if(!(amount > 0)){ alert('Ingresa un monto válido.'); return; }
+    if(!note){ alert('Escribe un concepto o nota.'); return; }
+    if(!category){ alert('Selecciona una categoría.'); return; }
+
+    const editId = document.body.dataset.walletPayEditId;
+    if(editId){
+      const idx = (walletUpcoming||[]).findIndex(x=>String(x.id)===String(editId));
+      if(idx >= 0){
+        walletUpcoming[idx].due = due;
+        walletUpcoming[idx].amount = amount;
+        walletUpcoming[idx].note = note;
+        walletUpcoming[idx].category = category;
+      }
+    }else{
+      walletUpcoming = walletUpcoming || [];
+      walletUpcoming.push({ id: String(Date.now()), due, amount, note, category });
+    }
+
+    walletSaveUpcoming();
+    walletClearUpcomingForm();
+    if(payDue) payDue.value = walletISOToday();
+    renderWalletUpcoming();
+  };
+}
+
+if(payClear){
+  payClear.onclick = (e)=>{
+      if(e) e.preventDefault();
+    walletClearUpcomingForm();
+    if(payDue) payDue.value = walletISOToday();
+  };
+}
+
+renderWalletUpcoming();
+}
+
+
+    function renderWalletList(){
+  const list = document.getElementById('walletTxList');
+  if(!list) return;
+
+  const mFrom = document.getElementById('walletMonthFrom')?.value || '';
+  const mTo   = document.getElementById('walletMonthTo')?.value || mFrom || '';
+
+  const items = (walletTx || [])
+    .slice()
+    .filter(t => {
+      if(!mFrom) return true;
+      const d = String(t?.date || '').trim();   // "YYYY-MM-DD"
+      const ym = (d.length >= 7) ? d.slice(0,7) : '';
+      if(!ym) return false;
+      if(!mTo) return ym === mFrom;
+      return (ym >= mFrom && ym <= mTo);
+    })
+    .sort((a,b)=>{
+      const da = parseISODateLocal(a.date)?.getTime() || 0;
+      const db = parseISODateLocal(b.date)?.getTime() || 0;
+      if(db !== da) return db - da;
+      return String(b.id).localeCompare(String(a.id));
+    });
+
+  if(items.length === 0){
+    list.innerHTML = '<div class="empty-state">No hay movimientos para este mes.</div>';
+    return;
+  }
+
+  const incomes  = items.filter(t => t.type === 'in');
+  const expenses = items.filter(t => t.type === 'out');
+
+  const renderTxItems = (arr) => {
+    if(!arr.length) return '<div class="empty-state" style="padding:0.75rem 0;">Sin movimientos.</div>';
+
+    return `
+      <div class="maintenance-list">
+        ${arr.map(t=>{
+          const isIn = t.type === 'in';
+          const badge = isIn
+            ? '<span class="badge badge-success">Ingreso</span>'
+            : '<span class="badge badge-danger">Egreso</span>';
+          const sign = isIn ? '+' : '-';
+          const amt = money(safeNumber(t.amount));
+          const note = (t.note || '').trim();
+          const noteHtml = note ? `<p>${escapeHtml(note)}</p>` : '<p style="opacity:.75;">(Sin nota)</p>';
+
+          return `
+            <div class="maintenance-item">
+              <div class="item-info">
+                <h4>${badge} <span style="margin-left:.5rem; font-family:'Space Mono',monospace;">${escapeHtml(formatDateMX(t.date))}</span></h4>
+                <div style="margin-top:.35rem;">
+                  <div style="font-weight:900; font-size:1.05rem;">${sign} ${escapeHtml(amt)}</div>
+                  ${noteHtml}
+                </div>
+              </div>
+              <div class="row-actions" style="align-self:flex-start;">
+                <button class="btn-mini danger" type="button" onclick="deleteWalletTx('${String(t.id)}')">Eliminar</button>
+              </div>
+            </div>
+          `;
+        }).join('')}
+      </div>
+    `;
+  };
+
+  const col = (titleHtml, count, innerHtml) => `
+    <details class="wallet-drop">
+      <summary>
+        <div class="wallet-col-title">${titleHtml} <span class="hint">${count} mov.</span></div>
+        <div class="wallet-caret">▾</div>
+      </summary>
+      <div class="wallet-scroll">
+        ${innerHtml}
+      </div>
+    </details>
+  `;
+
+  list.innerHTML = `
+    <div class="wallet-columns">
+      <div class="wallet-col">
+        ${col('✅&nbsp;Ingresos', incomes.length, renderTxItems(incomes))}
+      </div>
+      <div class="wallet-col">
+        ${col('⛔&nbsp;Egresos', expenses.length, renderTxItems(expenses))}
+      </div>
+    </div>
+  `;
+}
+
+
+// =========================
+// Billetera: Gráficas (Mes actual / seleccionado + Año)
+// =========================
+function walletResizeCanvasToDisplay(canvas){
+  const dpr = window.devicePixelRatio || 1;
+  const rect = canvas.getBoundingClientRect();
+  const targetW = Math.max(280, Math.floor(rect.width));
+  const targetH = Math.max(220, Math.floor(rect.height));
+  if(canvas.width !== Math.floor(targetW*dpr) || canvas.height !== Math.floor(targetH*dpr)){
+    canvas.width = Math.floor(targetW*dpr);
+    canvas.height = Math.floor(targetH*dpr);
+    const ctx = canvas.getContext('2d');
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+}
+
+function walletStyleVars(){
+  const cs = getComputedStyle(document.documentElement);
+  return {
+    cIn: (cs.getPropertyValue('--success') || '#00E676').trim(),
+    cOut:(cs.getPropertyValue('--danger')  || '#ef4444').trim(),
+    grid:'rgba(255,255,255,0.10)',
+    text:'rgba(255,255,255,0.85)',
+    sub :'rgba(255,255,255,0.60)',
+    panel:'rgba(0,0,0,0.12)'
+  };
+}
+
+function walletGetRangeISO(){
+  const wmFrom = document.getElementById('walletMonthFrom');
+  const wmTo = document.getElementById('walletMonthTo');
+
+  const now = new Date();
+  const mm = String(now.getMonth()+1).padStart(2,'0');
+  const cur = `${now.getFullYear()}-${mm}`;
+
+  let from = (wmFrom && wmFrom.value) ? wmFrom.value : cur;
+  let to = (wmTo && wmTo.value) ? wmTo.value : from;
+
+  if(from && to && from > to) to = from;
+  return { from, to };
+}
+
+function walletFilterByRange(mFrom, mTo){
+  return (walletTx || []).filter(t=>{
+    const d = String(t?.date || '').trim(); // YYYY-MM-DD
+    if(d.length < 7) return false;
+    const ym = d.slice(0,7);
+    if(!mFrom) return true;
+    if(!mTo) return ym === mFrom;
+    return (ym >= mFrom && ym <= mTo);
+  });
+}
+
+function walletAggRangeInOut(mFrom, mTo){
+  const items = walletFilterByRange(mFrom, mTo);
+  let inSum = 0, outSum = 0;
+  items.forEach(t=>{
+    const amt = safeNumber(t.amount);
+    if(t.type === 'in') inSum += amt;
+    if(t.type === 'out') outSum += amt;
+  });
+  return { inSum, outSum, items };
+}
+
+function walletTopExpenseConceptsRange(mFrom, mTo){
+  const items = walletFilterByRange(mFrom, mTo).filter(t=>t.type==='out');
+  const map = {}; // concept -> sum
+  items.forEach(t=>{
+    const note = String(t.note || '').trim();
+    let concept = note ? note.split(/\s+/)[0] : 'Sin';
+    concept = concept ? concept.slice(0,18) : 'Sin';
+    if(!concept) concept = 'Sin';
+    map[concept] = (map[concept] || 0) + safeNumber(t.amount);
+  });
+  const arr = Object.entries(map).sort((a,b)=>b[1]-a[1]);
+  const top = arr.slice(0,6);
+  const rest = arr.slice(6);
+  const otherSum = rest.reduce((s, [,v])=>s+v, 0);
+  if(otherSum > 0) top.push(['Otros', otherSum]);
+  return top; // [ [label, value], ... ]
+}
+
+function walletAggMonthDaily(mFrom, mTo){
+  // Si es un solo mes => serie diaria
+  if(mFrom && mTo && mFrom === mTo){
+    const y = parseInt(mFrom.slice(0,4), 10);
+    const m = parseInt(mFrom.slice(5,7), 10); // 1-12
+    if(isNaN(y) || isNaN(m) || m < 1 || m > 12){
+      return { labels: [], inArr: [], outArr: [] };
+    }
+
+    const daysInMonth = new Date(y, m, 0).getDate();
+    const labels = [];
+    const inArr = Array(daysInMonth).fill(0);
+    const outArr = Array(daysInMonth).fill(0);
+
+    for(let d=1; d<=daysInMonth; d++){
+      labels.push(String(d).padStart(2,'0'));
+    }
+
+    (walletTx || []).forEach(t=>{
+      const ds = String(t?.date || '').trim(); // "YYYY-MM-DD"
+      if(ds.length < 10) return;
+      if(ds.slice(0,7) !== mFrom) return;
+
+      const day = parseInt(ds.slice(8,10), 10);
+      if(isNaN(day) || day < 1 || day > daysInMonth) return;
+
+      const amt = safeNumber(t.amount);
+      const idx = day - 1;
+      if(t.type === 'in') inArr[idx] += amt;
+      if(t.type === 'out') outArr[idx] += amt;
+    });
+
+    return { labels, inArr, outArr };
+  }
+
+  // Rango de meses => serie mensual (un punto por mes)
+  const labels = [];
+  const inArr = [];
+  const outArr = [];
+
+  if(!mFrom) return { labels: [], inArr: [], outArr: [] };
+  if(!mTo) mTo = mFrom;
+  if(mFrom > mTo) mTo = mFrom;
+
+  let y = parseInt(mFrom.slice(0,4),10);
+  let m = parseInt(mFrom.slice(5,7),10);
+  const yEnd = parseInt(mTo.slice(0,4),10);
+  const mEnd = parseInt(mTo.slice(5,7),10);
+
+  while(y < yEnd || (y === yEnd && m <= mEnd)){
+    const mm = String(m).padStart(2,'0');
+    const key = `${y}-${mm}`;
+    labels.push(key);
+
+    let sIn = 0, sOut = 0;
+    (walletTx || []).forEach(t=>{
+      const ds = String(t?.date || '').trim();
+      if(ds.length < 7) return;
+      if(ds.slice(0,7) !== key) return;
+      const amt = safeNumber(t.amount);
+      if(t.type === 'in') sIn += amt;
+      if(t.type === 'out') sOut += amt;
+    });
+    inArr.push(sIn);
+    outArr.push(sOut);
+
+    m++;
+    if(m > 12){ m = 1; y++; }
+  }
+
+  return { labels, inArr, outArr };
+}
+
+
+function walletDrawMonthBars(canvas, inSum, outSum, title){
+  walletResizeCanvasToDisplay(canvas);
+  const ctx = canvas.getContext('2d');
+  const { cIn, cOut, grid, text, sub } = walletStyleVars();
+  const cGain = '#3b82f6'; // azul para ganancia
+
+  const w = canvas.getBoundingClientRect().width;
+  const h = canvas.getBoundingClientRect().height;
+
+  ctx.clearRect(0,0,w,h);
+
+  // title
+  ctx.fillStyle = text;
+  ctx.font = "700 13px Space Mono, monospace";
+  ctx.fillText(title, 14, 20);
+
+  const gain = inSum - outSum;
+
+  const top=34, left=55, right=14, bottom=30;
+  const pw = w-left-right, ph=h-top-bottom;
+
+  const maxVal = Math.max(1, inSum, outSum, gain) * 1.15;
+
+  // grid + eje Y con cantidades
+  ctx.strokeStyle = grid;
+  ctx.fillStyle = sub;
+  ctx.font = "700 11px DM Sans, sans-serif";
+
+  for(let i=0;i<=4;i++){
+    const y = top + ph*(i/4);
+    ctx.beginPath(); ctx.moveTo(left,y); ctx.lineTo(left+pw,y); ctx.stroke();
+
+    const val = Math.round(maxVal * (1 - i/4));
+    const label = money(val);
+    const tw = ctx.measureText(label).width;
+    ctx.fillText(label, left - tw - 6, y + 3);
+  }
+
+  const labels = ["Ingresos","Egresos","Ganancia"];
+  const vals = [inSum, outSum, gain];
+  const cols = [cIn, cOut, cGain];
+
+  const barW = Math.min(60, pw/7);
+  const gap = Math.min(40, pw/10);
+  const baseX = left + pw/2 - (barW*3 + gap*2)/2;
+
+  for(let i=0;i<3;i++){
+    const bh = (vals[i]/maxVal)*ph;
+    const x = baseX + i*(barW+gap);
+
+    ctx.fillStyle = cols[i];
+    ctx.globalAlpha = 0.9;
+    ctx.fillRect(x, top+ph-bh, barW, bh);
+    ctx.globalAlpha = 1;
+
+    // cantidad arriba
+    ctx.fillStyle = text;
+    ctx.font = "800 12px DM Sans, sans-serif";
+    const valStr = money(vals[i]);
+    const twVal = ctx.measureText(valStr).width;
+    ctx.fillText(valStr, x + (barW - twVal)/2, top+ph-bh-6);
+
+    // nombre abajo
+    ctx.fillStyle = sub;
+    ctx.font = "700 12px DM Sans, sans-serif";
+    const tw = ctx.measureText(labels[i]).width;
+    ctx.fillText(labels[i], x + (barW-tw)/2, top+ph+18);
+  }
+}
+
+function walletDrawDonut(canvas, inSum, outSum, title){
+  walletResizeCanvasToDisplay(canvas);
+  const ctx = canvas.getContext('2d');
+  const { cIn, cOut, text, sub, grid } = walletStyleVars();
+
+  const w = canvas.getBoundingClientRect().width;
+  const h = canvas.getBoundingClientRect().height;
+
+  ctx.clearRect(0,0,w,h);
+
+  // title
+  ctx.fillStyle = text;
+  ctx.font = "700 13px Space Mono, monospace";
+  ctx.fillText(title, 14, 20);
+
+  const total = inSum + outSum;
+  if(total <= 0){
+    ctx.fillStyle = sub;
+    ctx.font = "800 13px DM Sans, sans-serif";
+    ctx.fillText("Sin datos en este mes.", 14, 48);
+    return;
+  }
+
+  const cx = w/2, cy = (h/2)+6;
+  const r = Math.min(w,h)*0.32;
+  const rIn = r*0.62;
+
+  // Angles
+  const aIn = (inSum/total) * Math.PI*2;
+  const aOut = (outSum/total) * Math.PI*2;
+
+  let ang = -Math.PI/2;
+
+  // Ingresos slice
+  ctx.beginPath();
+  ctx.moveTo(cx,cy);
+  ctx.arc(cx,cy,r,ang,ang+aIn);
+  ctx.closePath();
+  ctx.fillStyle = cIn;
+  ctx.globalAlpha = 0.85;
+  ctx.fill();
+  ctx.globalAlpha = 1;
+  ang += aIn;
+
+  // Egresos slice
+  ctx.beginPath();
+  ctx.moveTo(cx,cy);
+  ctx.arc(cx,cy,r,ang,ang+aOut);
+  ctx.closePath();
+  ctx.fillStyle = cOut;
+  ctx.globalAlpha = 0.85;
+  ctx.fill();
+  ctx.globalAlpha = 1;
+
+  // Hole
+  ctx.beginPath();
+  ctx.arc(cx,cy,rIn,0,Math.PI*2);
+  ctx.fillStyle = 'rgba(0,0,0,0.18)';
+  ctx.fill();
+  ctx.strokeStyle = grid;
+  ctx.stroke();
+
+  // Center text (ganancias en azul con contraste)
+  const balance = inSum - outSum;
+
+  const blue = '#3b82f6';
+
+  // círculo central más oscuro para contraste
+  ctx.beginPath();
+  ctx.arc(cx, cy, rIn * 0.92, 0, Math.PI * 2);
+  ctx.fillStyle = 'rgba(0,0,0,0.45)';
+  ctx.fill();
+
+  // sombra suave
+  ctx.shadowColor = 'rgba(0,0,0,0.6)';
+  ctx.shadowBlur = 6;
+
+  ctx.fillStyle = blue;
+  ctx.font = "900 16px Space Mono, monospace";
+  const balStr = money(balance);
+  const tw = ctx.measureText(balStr).width;
+  ctx.fillText(balStr, cx - tw/2, cy+2);
+
+  ctx.shadowBlur = 0;
+
+  ctx.fillStyle = blue;
+  ctx.font = "900 12px DM Sans, sans-serif";
+  const lab = "Ganancias";
+  const lw = ctx.measureText(lab).width;
+  ctx.fillText(lab, cx - lw/2, cy+18);
+
+  // Legend
+  let lx = 14, ly = h-8;
+  ctx.font = "800 11px DM Sans, sans-serif";
+
+  ctx.fillStyle = cIn;
+  ctx.fillRect(lx, ly-10, 10, 10);
+  ctx.fillStyle = text;
+  ctx.fillText("Ingresos", lx+14, ly);
+  lx += 14 + ctx.measureText("Ingresos").width + 16;
+
+  ctx.fillStyle = cOut;
+  ctx.fillRect(lx, ly-10, 10, 10);
+  ctx.fillStyle = text;
+  ctx.fillText("Egresos", lx+14, ly);
+}
+
+function walletCategoryColor(mode, i){
+  // mode: 'in' | 'out'
+  // Golden-angle palette for distinct colors (per categoría)
+  const base = (mode === 'in') ? 140 : 10;     // verde-ish / rojo-ish de arranque
+  const hue = (base + (i * 137.508)) % 360;    // golden angle
+  const sat = 82;
+  const light = 52;
+  return `hsl(${hue} ${sat}% ${light}%)`;
+}
+
+function walletDrawCategoryDonut(canvas, labels, values, title, base){
+  walletResizeCanvasToDisplay(canvas);
+  const ctx = canvas.getContext('2d');
+  const { text, sub, grid } = walletStyleVars();
+
+  const w = canvas.getBoundingClientRect().width;
+  const h = canvas.getBoundingClientRect().height;
+
+  ctx.clearRect(0,0,w,h);
+
+  // title
+  ctx.fillStyle = text;
+  ctx.font = "700 13px Space Mono, monospace";
+  ctx.fillText(title, 14, 20);
+
+  const total = (values || []).reduce((a,b)=>a+Number(b||0),0);
+  if(!total || total <= 0){
+    ctx.fillStyle = sub;
+    ctx.font = "800 13px DM Sans, sans-serif";
+    ctx.fillText("Sin datos en este mes.", 14, 48);
+    return;
+  }
+
+  const cx = w/2, cy = (h/2)+6;
+  const r = Math.min(w,h)*0.32;
+  const rIn = r*0.62;
+
+  // Draw slices
+  let ang = -Math.PI/2;
+  const n = labels.length;
+
+  for(let i=0;i<n;i++){
+    const v = Number(values[i]||0);
+    const a = (v/total) * Math.PI*2;
+
+    ctx.beginPath();
+    ctx.moveTo(cx,cy);
+    ctx.arc(cx,cy,r,ang,ang+a);
+    ctx.closePath();
+    ctx.fillStyle = walletCategoryColor(base, i);
+    ctx.globalAlpha = 0.88;
+    ctx.fill();
+    ctx.globalAlpha = 1;
+
+    ang += a;
+  }
+
+  // Hole
+  ctx.beginPath();
+  ctx.arc(cx,cy,rIn,0,Math.PI*2);
+  ctx.fillStyle = 'rgba(0,0,0,0.18)';
+  ctx.fill();
+  ctx.strokeStyle = grid;
+  ctx.stroke();
+
+  // Center total
+  ctx.beginPath();
+  ctx.arc(cx,cy,rIn * 0.92, 0, Math.PI*2);
+  ctx.fillStyle = 'rgba(0,0,0,0.45)';
+  ctx.fill();
+
+  ctx.fillStyle = (base === 'in') ? '#22c55e' : '#ef4444';
+  ctx.font = "900 15px Space Mono, monospace";
+  const totStr = money(total);
+  const tw = ctx.measureText(totStr).width;
+  ctx.fillText(totStr, cx - tw/2, cy+2);
+
+  ctx.fillStyle = text;
+  ctx.font = "900 12px DM Sans, sans-serif";
+  const lab = "Total";
+  const lw = ctx.measureText(lab).width;
+  ctx.fillText(lab, cx - lw/2, cy+18);
+
+  // Legend (up to 6 items)
+  const maxLeg = 10;
+  const shown = Math.min(labels.length, maxLeg);
+  let lx = 14, ly = h-8;
+  ctx.font = "800 11px DM Sans, sans-serif";
+
+  for(let i=0;i<shown;i++){
+    const name = labels[i];
+    ctx.fillStyle = walletCategoryColor(base, i);
+    ctx.fillRect(lx, ly-10, 10, 10);
+    ctx.fillStyle = text;
+    ctx.fillText(name, lx+14, ly);
+    lx += 14 + ctx.measureText(name).width + 16;
+    if(lx > w-120){
+      lx = 14;
+      ly -= 16;
+    }
+  }
+  if(labels.length > maxLeg){
+    ctx.fillStyle = sub;
+    ctx.fillText(`+${labels.length-maxLeg} más`, lx, ly);
+  }
+}
+
+function walletDrawTrend(canvas, labels, inArr, outArr, title){
+  walletResizeCanvasToDisplay(canvas);
+  const ctx = canvas.getContext('2d');
+  const { cIn, cOut, grid, text, sub } = walletStyleVars();
+  const cGain = '#3b82f6';
+
+  const w = canvas.getBoundingClientRect().width;
+  const h = canvas.getBoundingClientRect().height;
+
+  ctx.clearRect(0,0,w,h);
+
+  // title
+  ctx.fillStyle = text;
+  ctx.font = "700 13px Space Mono, monospace";
+  ctx.fillText(title, 14, 20);
+
+  // legend
+  ctx.font = "700 12px DM Sans, sans-serif";
+  ctx.fillStyle = cIn; ctx.fillRect(14, 30, 10, 10);
+  ctx.fillStyle = text; ctx.fillText("Ingresos", 28, 39);
+
+  ctx.fillStyle = cOut; ctx.fillRect(105, 30, 10, 10);
+  ctx.fillStyle = text; ctx.fillText("Egresos", 119, 39);
+
+  ctx.fillStyle = cGain; ctx.fillRect(185, 30, 10, 10);
+  ctx.fillStyle = text; ctx.fillText("Ganancia", 199, 39);
+
+  const top=52, left=62, right=14, bottom=34;
+  const pw = w-left-right, ph=h-top-bottom;
+
+  const gainArr = (inArr || []).map((v,i)=> Math.max(0, v - (outArr[i]||0)));
+  const maxVal = Math.max(1, ...(inArr||[0]), ...(outArr||[0]), ...gainArr) * 1.15;
+
+  // grid
+  ctx.strokeStyle = grid;
+  for(let i=0;i<=4;i++){
+    const y = top + ph*(i/4);
+    ctx.beginPath(); ctx.moveTo(left,y); ctx.lineTo(left+pw,y); ctx.stroke();
+  }
+
+  const n = labels.length;
+  if(n < 2){
+    ctx.fillStyle = sub;
+    ctx.font = "800 13px DM Sans, sans-serif";
+    ctx.fillText("Sin datos.", 14, top + 20);
+    return;
+  }
+
+  const xAt = i => left + (pw * (i/(n-1)));
+  const yAt = v => top + ph - ((v/maxVal)*ph);
+
+  function drawLine(arr, color){
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    for(let i=0;i<n;i++){
+      const x = xAt(i);
+      const y = yAt((arr[i]||0));
+      if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+    }
+    ctx.stroke();
+  }
+
+  drawLine(inArr, cIn);
+  drawLine(outArr, cOut);
+  drawLine(gainArr, cGain);
+
+  // x labels
+  const k = (n <= 16) ? 2 : (n <= 24) ? 3 : 5;
+  ctx.fillStyle = sub;
+  ctx.font = "700 11px DM Sans, sans-serif";
+  for(let i=0;i<n;i+=k){
+    const lbl = labels[i];
+    const tw = ctx.measureText(lbl).width;
+    ctx.fillText(lbl, xAt(i)-tw/2, top+ph+20);
+  }
+
+  // eje Y labels (más pequeños para que no se corten)
+  ctx.fillStyle = sub;
+  ctx.font = "700 10px DM Sans, sans-serif";
+  for(let i=0;i<=4;i++){
+    const val = Math.round(maxVal * (1 - i/4));
+    const lab = money(val);
+    const y = top + ph*(i/4);
+    const tw = ctx.measureText(lab).width;
+    ctx.fillText(lab, left - tw - 6, y + 3);
+  }
+}
+
+function walletAggByYear(){
+  const map = {}; // {year: {in:0,out:0}}
+  (walletTx || []).forEach(t=>{
+    const d = String(t?.date || '').trim();
+    if(d.length < 4) return;
+    const y = parseInt(d.slice(0,4), 10);
+    if(isNaN(y)) return;
+    if(!map[y]) map[y] = { in:0, out:0 };
+    const amt = safeNumber(t.amount);
+    if(t.type === 'in') map[y].in += amt;
+    if(t.type === 'out') map[y].out += amt;
+  });
+  const years = Object.keys(map).map(n=>parseInt(n,10)).sort((a,b)=>a-b);
+  return { years, map };
+}
+
+function walletDrawYearBars(canvas){
+  walletResizeCanvasToDisplay(canvas);
+  const ctx = canvas.getContext('2d');
+  const { cIn, cOut, grid, text, sub } = walletStyleVars();
+  const w = canvas.getBoundingClientRect().width;
+  const h = canvas.getBoundingClientRect().height;
+
+  ctx.clearRect(0,0,w,h);
+
+  const { years, map } = walletAggByYear();
+  if(!years.length){
+    ctx.fillStyle = sub;
+    ctx.font = "800 13px DM Sans, sans-serif";
+    ctx.fillText("Sin datos aún.", 14, 40);
+    return;
+  }
+
+  const top=34, left=40, right=14, bottom=26;
+  const pw = w-left-right, ph=h-top-bottom;
+
+  const s1 = years.map(y=>map[y].in||0);
+  const s2 = years.map(y=>map[y].out||0);
+  const maxVal = Math.max(1, ...s1, ...s2) * 1.15;
+
+  // grid
+  ctx.strokeStyle = grid;
+  for(let i=0;i<=4;i++){
+    const y = top + ph*(i/4);
+    ctx.beginPath(); ctx.moveTo(left,y); ctx.lineTo(left+pw,y); ctx.stroke();
+  }
+
+  const n = years.length;
+  const groupW = pw / n;
+  const barW = Math.min(22, groupW*0.25);
+  const gap = Math.min(10, groupW*0.12);
+  const offset = (groupW - (barW*2 + gap))/2;
+
+  for(let i=0;i<n;i++){
+    const x0 = left + i*groupW + offset;
+    const bh1 = (s1[i]/maxVal)*ph;
+    const bh2 = (s2[i]/maxVal)*ph;
+
+    ctx.fillStyle = cIn; ctx.globalAlpha=0.85;
+    ctx.fillRect(x0, top+ph-bh1, barW, bh1);
+
+    ctx.fillStyle = cOut; ctx.globalAlpha=0.80;
+    ctx.fillRect(x0+barW+gap, top+ph-bh2, barW, bh2);
+    ctx.globalAlpha=1;
+
+    const lbl = String(years[i]);
+    ctx.fillStyle = sub;
+    ctx.font = "700 11px DM Sans, sans-serif";
+    const tw = ctx.measureText(lbl).width;
+    ctx.fillText(lbl, left + i*groupW + (groupW-tw)/2, top+ph+18);
+  }
+
+  // legend
+  ctx.fillStyle = cIn; ctx.globalAlpha=0.85; ctx.fillRect(left, h-12, 10, 10); ctx.globalAlpha=1;
+  ctx.fillStyle = text; ctx.font="700 12px DM Sans, sans-serif"; ctx.fillText("Ingresos", left+14, h-3);
+  ctx.fillStyle = cOut; ctx.globalAlpha=0.80; ctx.fillRect(left+90, h-12, 10, 10); ctx.globalAlpha=1;
+  ctx.fillStyle = text; ctx.fillText("Egresos", left+104, h-3);
+}
+
+function walletVehicleColorToHex(raw){
+  const s = String(raw||'').trim().toLowerCase();
+  if(!s) return null;
+  // Si ya es un color CSS válido (hex o rgb/rgba/hsl), lo dejamos pasar
+  if(s.startsWith('#') || s.startsWith('rgb') || s.startsWith('hsl')) return raw;
+
+  // Mapeo rápido de nombres comunes (ES)
+  const map = {
+    'blanco':'#e5e7eb',
+    'negro':'#111827',
+    'gris':'#9ca3af',
+    'plata':'#cbd5e1',
+    'rojo':'#ef4444',
+    'vino':'#7f1d1d',
+    'azul':'#3b82f6',
+    'azul marino':'#1e3a8a',
+    'marino':'#1e3a8a',
+    'verde':'#22c55e',
+    'verde oscuro':'#166534',
+    'amarillo':'#facc15',
+    'naranja':'#f97316',
+    'morado':'#8b5cf6',
+    'violeta':'#8b5cf6',
+    'rosa':'#ec4899',
+    'cafe':'#78350f',
+    'café':'#78350f'
+  };
+  if(map[s]) return map[s];
+
+  // Si viene algo tipo "Morado" o "Gris", intentamos por inclusión
+  for(const k in map){
+    if(s.includes(k)) return map[k];
+  }
+  return null;
+}
+
+
+function walletDrawVehicleValuesBars(canvas, vehiclesList, title){
+  // NOTA: Este chart se dibuja en canvas (sin Chart.js) para mantener el estilo del dashboard.
+  // Requisito UX: NO repetir el título dentro de la gráfica (ya existe en el encabezado del card).
+  // Además: quitar valores por barra y mostrar escala/valores en la parte superior.
+
+  walletResizeCanvasToDisplay(canvas);
+  const ctx = canvas.getContext('2d');
+  const { grid, text, sub } = walletStyleVars();
+
+  const w = canvas.getBoundingClientRect().width;
+  const h = canvas.getBoundingClientRect().height;
+
+  ctx.clearRect(0,0,w,h);
+
+  // layout (horizontal bars)
+  const top = 36, left = 140, right = 18, bottom = 16;
+  const pw = w - left - right;
+  const ph = h - top - bottom;
+
+  // Datos: solo con valor > 0 (si ninguno, mostramos "Sin datos")
+  const data = (vehiclesList || [])
+    .map(v=>({
+      name: String(v.name||'Vehículo').trim() || 'Vehículo',
+      color: String(v.color||'').trim(),
+      value: Number(v.value||0)
+    }))
+    .filter(v=>v.value > 0);
+
+  // grid tenue (vertical)
+  ctx.strokeStyle = grid;
+  // grid tenue (0%, 50%, 100%)
+  for(let i=0;i<=2;i++){
+    const x = left + pw*(i/2);
+    ctx.beginPath(); ctx.moveTo(x, top); ctx.lineTo(x, top+ph); ctx.stroke();
+  }
+
+  if(!data.length){
+    ctx.fillStyle = sub;
+    ctx.font = "800 13px DM Sans, sans-serif";
+    ctx.fillText("Sin valores de vehículos aún.", 14, top + 24);
+    return;
+  }
+
+  // ordenar desc y limitar para legibilidad
+  data.sort((a,b)=>b.value-a.value);
+  const maxItems = 10;
+  const view = data.slice(0, maxItems);
+
+  // escala (max)
+  const maxVal = Math.max(...view.map(v=>v.value), 1);
+
+  // valores/escala en la parte superior (0, 50% y 100%)
+  ctx.fillStyle = sub;
+  ctx.font = "800 11px DM Sans, sans-serif";
+  ctx.textBaseline = "alphabetic";
+  for(let i=0;i<=2;i++){
+    const val = maxVal*(i/2);
+    const lbl = money(val);
+    const x = left + pw*(i/2);
+    const tw = ctx.measureText(lbl).width;
+    // centrado sobre la línea de grid
+    const tx = Math.max(left, Math.min(w-right-tw, x - tw/2));
+    // un poquito arriba del área de barras
+    ctx.fillText(lbl, tx, top - 10);
+  }
+
+  // barras
+  const n = view.length;
+  const rowH = ph / n;
+  const barH = Math.max(12, Math.min(22, rowH * 0.62));
+
+  const xAt = v => left + ((v/maxVal) * pw);
+
+  for(let i=0;i<n;i++){
+    const v = view[i];
+
+    // y center de la fila
+    const cy = top + rowH*i + rowH/2;
+    const y = cy - barH/2;
+
+    // nombre (izquierda)
+    ctx.fillStyle = sub;
+    ctx.font = "800 12px DM Sans, sans-serif";
+    const nameMax = 18;
+    const name = v.name.length > nameMax ? v.name.slice(0,nameMax) + '…' : v.name;
+    ctx.fillText(name, 14, cy + 4);
+
+    // barra
+    const x2 = xAt(v.value);
+    const c = walletVehicleColorToHex(v.color) || '#00e676';
+    ctx.fillStyle = c;
+    ctx.globalAlpha = 0.90;
+    ctx.fillRect(left, y, Math.max(2, x2-left), barH);
+    ctx.globalAlpha = 1;
+  }
+
+  // nota si hay más de maxItems
+  if(data.length > maxItems){
+    ctx.fillStyle = sub;
+    ctx.font = "800 11px DM Sans, sans-serif";
+    ctx.fillText(`.`, 14, h - 8);
+  }
+}
+
+
+function renderWalletCharts(){
+  const cBars = document.getElementById('walletChartMonthBars');
+  const cDon  = document.getElementById('walletChartMonthDonut');
+  const cTr   = document.getElementById('walletChartTrend30');
+  const cInC  = document.getElementById('walletChartInCatsDonut');
+  const cOutC = document.getElementById('walletChartOutCatsDonut');
+  const cYear = document.getElementById('walletChartYearBars');
+  const cVeh  = document.getElementById('walletChartVehicleValues');
+  const cVehTot = document.getElementById('walletVehiclesTotalValue');
+  if(!cBars || !cDon || !cTr) return;
+
+  const rng = walletGetRangeISO();
+  const mFrom = rng.from;
+  const mTo = rng.to;
+  const period = (mFrom === mTo) ? mFrom : `${mFrom} a ${mTo}`;
+  const { inSum, outSum } = walletAggRangeInOut(mFrom, mTo);
+
+  walletDrawMonthBars(cBars, inSum, outSum, `Ingresos vs Egresos (${period})`);
+
+  const slices = walletTopExpenseConceptsRange(mFrom, mTo);
+  walletDrawDonut(cDon, inSum, outSum, `Ingresos vs Egresos (${period})`);
+
+  const tm = walletAggMonthDaily(mFrom, mTo);
+walletDrawTrend(cTr, tm.labels, tm.inArr, tm.outArr, `Tendencia (${period})`);
+
+// Circular por categoría (con base en el mes/rango seleccionado)
+if(cInC || cOutC){
+  const txIn = {};
+  const txOut = {};
+  const list = (walletTx || []).filter(t=>{
+      const d = String(t.date||'');
+      return d >= mFrom+'-01' && d <= mTo+'-31';
+    });
+  list.forEach(t=>{
+    const cat = String(t.category || 'Sin categoría').trim() || 'Sin categoría';
+    const amt = Number(t.amount || 0);
+    if(t.type === 'in')  txIn[cat]  = (txIn[cat]  || 0) + amt;
+    if(t.type === 'out') txOut[cat] = (txOut[cat] || 0) + amt;
+  });
+
+  // ordenar desc
+  const inPairs = Object.entries(txIn).sort((a,b)=>b[1]-a[1]);
+  const outPairs = Object.entries(txOut).sort((a,b)=>b[1]-a[1]);
+
+  const inLabels = inPairs.map(p=>p[0]);
+  const inVals   = inPairs.map(p=>p[1]);
+  const outLabels= outPairs.map(p=>p[0]);
+  const outVals  = outPairs.map(p=>p[1]);
+
+  if(cInC)  walletDrawCategoryDonut(cInC,  inLabels,  inVals,  `Ingresos por Categoría (${period})`, 'in');
+  if(cOutC) walletDrawCategoryDonut(cOutC, outLabels, outVals, `Egresos por Categoría (${period})`, 'out');
+}
+  if(cYear) walletDrawYearBars(cYear);
+  if(cVeh){
+    // ordenar por valor desc (solo los que tengan valor > 0)
+    const listVeh = (vehicles || []).map(v=>({ 
+      name: String(v.name||'Vehículo').trim() || 'Vehículo',
+      color: String(v.color||'').trim(),
+      value: Number(v.value||0)
+    }));
+    walletDrawVehicleValuesBars(cVeh, listVeh, 'Valor de Vehículos');
+    if(cVehTot){
+      const totalV = listVeh.reduce((a,b)=>a + (Number(b.value)||0), 0);
+      cVehTot.innerHTML = '<span class="sub">Total:</span> ' + money(totalV);
+    }
+  }
+
+  // Re-render on resize (debounced)
+  let t = null;
+  window.removeEventListener('resize', window.__walletChartsResizeHandler || (()=>{}));
+  window.__walletChartsResizeHandler = ()=>{
+    clearTimeout(t);
+    t = setTimeout(renderWalletCharts, 140);
+  };
+  window.addEventListener('resize', window.__walletChartsResizeHandler);
+}
+
+
+
+
+
+    function deleteWalletTx(id){
+      walletTx = (walletTx || []).filter(t => String(t.id) !== String(id));
+      saveWallet();
+      renderWallet();
+      renderDashboard(); // para refrescar KPIs en dashboard si estás ahí
+      showAlert('success','Movimiento eliminado.');
+    }
+
+    function renderWalletDashboardCard(){
+      const w = calcWallet();
+      const kBal = document.getElementById('walletKpiBalance');
+      const kIn  = document.getElementById('walletKpiIn');
+      const kOut = document.getElementById('walletKpiOut');
+      if(kBal) kBal.textContent = money(w.balance);
+      if(kIn)  kIn.textContent  = money(w.inSum);
+      if(kOut) kOut.textContent = money(w.outSum);
+
+      const lastWrap = document.getElementById('walletLastTx');
+      if(!lastWrap) return;
+
+      const last = (walletTx || []).slice().sort((a,b)=>{
+        const da = parseISODateLocal(a.date)?.getTime() || 0;
+        const db = parseISODateLocal(b.date)?.getTime() || 0;
+        return db - da;
+      }).slice(0,3);
+
+      if(last.length === 0){
+        lastWrap.innerHTML = '<div class="empty-state" style="padding:1.25rem 1rem;">Sin movimientos aún.</div>';
+        return;
+      }
+
+      lastWrap.innerHTML = last.map(t=>{
+        const isIn = t.type === 'in';
+        const badge = isIn ? '<span class="badge badge-success">Ingreso</span>' : '<span class="badge badge-danger">Egreso</span>';
+        const sign = isIn ? '+' : '-';
+        return `
+          <div class="maintenance-item" style="cursor:pointer;" onclick="showSection('wallet')">
+            <div class="item-info">
+              <h4>${badge} <span style="margin-left:.5rem; font-family:'Space Mono',monospace;">${escapeHtml(formatDateMX(t.date))}</span></h4>
+              <p style="margin-top:.25rem; font-weight:900;">${sign} ${escapeHtml(money(safeNumber(t.amount)))}</p>
+            </div>
+            <div class="chev">›</div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function openQuickWalletTx(){
+      // te manda a la sección billetera y te enfoca monto
+      showSection('wallet');
+      setTimeout(()=>{
+        const amt = document.getElementById('walletAmount');
+        if(amt) amt.focus();
+      }, 60);
+    }
+    cleanOrphanMaintenances();
 let workTab = 'home';
     let selectedMonthISO = '';
     let selectedWeekStartISO = '';
@@ -1593,10 +3715,27 @@ let workTab = 'home';
     // =========================
     const MS_DAY = 24 * 60 * 60 * 1000;
 
+    function normalizeISODateString(s){
+      if(!s || typeof s !== 'string') return '';
+      const str = s.trim();
+      if(/^\d{4}-\d{2}-\d{2}$/.test(str)) return str;
+      const m = /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/.exec(str);
+      if(m){
+        const dd = String(m[1]).padStart(2,'0');
+        const mm = String(m[2]).padStart(2,'0');
+        const yyyy = m[3];
+        return `${yyyy}-${mm}-${dd}`;
+      }
+      return str;
+    }
+
     // Parsea "YYYY-MM-DD" como fecha LOCAL (sin corrimiento UTC)
     function parseISODateLocal(iso){
       if(!iso || typeof iso !== 'string') return null;
-      const [y, m, d] = iso.split('-').map(Number);
+      iso = normalizeISODateString(iso);
+      const parts = iso.split('-').map(Number);
+      if(parts.length !== 3) return null;
+      const [y, m, d] = parts;
       if(!y || !m || !d) return null;
       return new Date(y, m - 1, d); // LOCAL
     }
@@ -1646,6 +3785,114 @@ function setVerificationFormMode(isEdit){
       if (sel.value === "__otro__") return (other?.value || "").trim() || "Otro";
       return sel.value.trim();
     }
+    // ===== Paleta de colores (Vehículos): reemplaza visualmente el select =====
+    const VEHICLE_COLOR_PALETTE = [
+      { name: "Blanco", hex: "#FFFFFF" },
+      { name: "Blanco Perlado", hex: "#F6F7F9" },
+      { name: "Plata", hex: "#C0C0C0" },
+      { name: "Plata Metálico", hex: "#A9ADB3" },
+      { name: "Gris Claro", hex: "#C7CBD1" },
+      { name: "Gris Obscuro", hex: "#59606A" },
+      { name: "Gris Oxford", hex: "#3A3F46" },
+      { name: "Negro", hex: "#0B0F14" },
+      { name: "Negro Mate", hex: "#262A2F" },
+      { name: "Rojo", hex: "#D32F2F" },
+      { name: "Rojo Vino", hex: "#7B1E2B" },
+      { name: "Azul", hex: "#1976D2" },
+      { name: "Azul Marino", hex: "#0D47A1" },
+      { name: "Verde", hex: "#2E7D32" },
+      { name: "Verde Olivo", hex: "#556B2F" },
+      { name: "Amarillo", hex: "#F9A825" },
+      { name: "Naranja", hex: "#EF6C00" },
+      { name: "Café", hex: "#6D4C41" },
+      { name: "Dorado", hex: "#C9A227" },
+      { name: "Morado", hex: "#6A1B9A" }
+    ];
+
+    function buildVehicleColorPalette(selectId, otherId){
+      const container = document.querySelector(`.color-palette[data-select="${selectId}"]`);
+      const sel = document.getElementById(selectId);
+      const other = document.getElementById(otherId);
+      if(!container || !sel) return;
+
+      // Construir swatches una sola vez
+      if(container.dataset.ready === "1") return;
+      container.dataset.ready = "1";
+
+      container.innerHTML = "";
+      VEHICLE_COLOR_PALETTE.forEach(c => {
+        const b = document.createElement("button");
+        b.type = "button";
+        b.className = "color-swatch";
+        b.style.background = c.hex;
+        b.setAttribute("data-name", c.name);
+        b.setAttribute("title", c.name);
+
+        // Blancos: borde más visible
+        if(c.hex.toUpperCase() === "#FFFFFF" || c.name.includes("Perlado")){
+          b.style.borderColor = "rgba(0,0,0,0.18)";
+        }
+
+        b.addEventListener("click", () => {
+          sel.value = c.name;
+          toggleCustomColor(selectId, otherId);
+          syncVehicleColorPalette(selectId, otherId);
+        });
+
+        container.appendChild(b);
+      });
+
+      // Swatch "Otro…"
+      const otherBtn = document.createElement("button");
+      otherBtn.type = "button";
+      otherBtn.className = "color-swatch";
+      otherBtn.setAttribute("data-name", "Otro…");
+      otherBtn.setAttribute("title", "Otro…");
+      otherBtn.style.background = "linear-gradient(135deg, rgba(255,255,255,0.85), rgba(0,230,118,0.55), rgba(0,0,0,0.6))";
+      otherBtn.addEventListener("click", () => {
+        sel.value = "__otro__";
+        toggleCustomColor(selectId, otherId);
+        if(other) other.focus();
+        syncVehicleColorPalette(selectId, otherId);
+      });
+      container.appendChild(otherBtn);
+
+      // Si cambian por código (ej. al abrir modal), sincroniza
+      sel.addEventListener("change", () => syncVehicleColorPalette(selectId, otherId));
+      if(other){
+        other.addEventListener("input", () => syncVehicleColorPalette(selectId, otherId));
+      }
+
+      // sync inicial
+      syncVehicleColorPalette(selectId, otherId);
+    }
+
+    function syncVehicleColorPalette(selectId, otherId){
+      const container = document.querySelector(`.color-palette[data-select="${selectId}"]`);
+      const sel = document.getElementById(selectId);
+      const other = document.getElementById(otherId);
+      if(!container || !sel) return;
+
+      const val = (sel.value || "").trim();
+      const swatches = Array.from(container.querySelectorAll(".color-swatch"));
+      swatches.forEach(s => s.classList.remove("is-selected"));
+
+      if(val === "__otro__"){
+        // último swatch es "Otro…"
+        const last = swatches[swatches.length - 1];
+        if(last) last.classList.add("is-selected");
+        return;
+      }
+
+      const found = swatches.find(s => (s.getAttribute("data-name") || "") === val);
+      if(found) found.classList.add("is-selected");
+    }
+
+    function initVehicleColorPalettes(){
+      buildVehicleColorPalette("carColor", "carColorOther");
+      buildVehicleColorPalette("editCarColor", "editCarColorOther");
+    }
+
 
     function setColorSelect(selectId, otherId, value) {
       const sel = document.getElementById(selectId);
@@ -1666,11 +3913,37 @@ function setVerificationFormMode(isEdit){
 
     function colorToHex(colorName) {
       const map = {
-        "Negro":"#111827","Blanco":"#e5e7eb","Gris":"#9ca3af","Plata":"#cbd5e1",
-        "Rojo":"#ef4444","Azul":"#3b82f6","Verde":"#22c55e","Amarillo":"#eab308",
-        "Naranja":"#f97316","Café":"#a16207","Vino":"#991b1b","Morado":"#7c3aed"
+        // Blancos
+        "Blanco":"#FFFFFF",
+        "Blanco Perlado":"#F6F7F9",
+
+        // Negros
+        "Negro":"#0B0F14",
+        "Negro Mate":"#262A2F",
+
+        // Grises / Plata
+        "Gris":"#9CA3AF",              // compat
+        "Gris Claro":"#C7CBD1",
+        "Gris Obscuro":"#59606A",
+        "Gris Oxford":"#3A3F46",
+        "Plata":"#C0C0C0",
+        "Plata Metálico":"#A9ADB3",
+
+        // Colores
+        "Rojo":"#D32F2F",
+        "Rojo Vino":"#7B1E2B",
+        "Vino":"#7B1E2B",              // compat
+        "Azul":"#1976D2",
+        "Azul Marino":"#0D47A1",
+        "Verde":"#2E7D32",
+        "Verde Olivo":"#556B2F",
+        "Amarillo":"#F9A825",
+        "Naranja":"#EF6C00",
+        "Café":"#6D4C41",
+        "Morado":"#6A1B9A",
+        "Dorado":"#C9A227"
       };
-      return map[colorName] || "#00E676";
+      return map[colorName] || "#9CA3AF";
     }
 
     function getCarSvgDataUri(hex="#e11d48") {
@@ -1724,6 +3997,16 @@ function setVerificationFormMode(isEdit){
       const x = safeNumber(n);
       return x.toLocaleString('es-MX', { style:'currency', currency:'MXN' });
     }
+
+    // ✅ Helper: detectar mantenimientos terminados (acepta datos viejos string/1)
+    function isMaintenanceCompleted(m){
+      if(!m) return false;
+      if(m.completed === true) return true;
+      if(m.completed === 1) return true;
+      if(typeof m.completed === 'string' && m.completed.toLowerCase() === 'true') return true;
+      return false;
+    }
+
 
     // =========================
     // Limpieza al borrar vehículo (evita "fantasmas" en dashboard)
@@ -1897,9 +4180,16 @@ function setVerificationFormMode(isEdit){
 
       document.getElementById(sectionName).classList.add('active');
       if(event && event.target) event.target.classList.add('active');
+      else {
+        // auto-activate nav button when called programmatically
+        const btn = Array.from(document.querySelectorAll('.nav-btn')).find(b => (b.getAttribute('onclick')||'').includes("'"+sectionName+"'"));
+        if(btn) btn.classList.add('active');
+      }
 
       if(sectionName === 'dashboard'){
         renderDashboard();
+      }else if(sectionName === 'wallet'){
+        renderWallet();
       }else if(sectionName === 'vehicles'){
         renderVehicles();
       }else if(sectionName === 'verification'){
@@ -1976,7 +4266,10 @@ function setVerificationFormMode(isEdit){
 
       document.getElementById('totalVehicles').textContent = vehicles.length;
       document.getElementById('alertsCount').textContent = alertsCount;
-      document.getElementById('overdueCount').textContent = overdueCount;
+      document.getElementById('overdueCount').textCo
+      // ✅ Dashboard: billetera
+      if(typeof renderWalletDashboardCard === 'function') renderWalletDashboardCard();
+ntent = overdueCount;
       document.getElementById('upcomingCount').textContent = upcomingCount;
 
       const alertsContainer = document.getElementById('dashboardAlerts');
@@ -2125,56 +4418,67 @@ function setVerificationFormMode(isEdit){
           </div>
         `).join('');
       }
+
+      // ✅ Dashboard: mantenimientos programados
+      renderUpcomingMaintenancesDashboard();
     }
 
-      // =========================
-      // Dashboard: Mantenimientos programados (futuros)
-      // =========================
+    // =========================
+    // Dashboard: Mantenimientos programados (futuros)
+    // =========================
+    function renderUpcomingMaintenancesDashboard(){
       const upcomingMaintContainer = document.getElementById('upcomingMaintenances');
       if(upcomingMaintContainer){
-        const upcomingMaint = [];
-        vehicles.forEach(v => {
-          const list = (maintenances && maintenances[v.id]) ? maintenances[v.id] : [];
-          list.forEach(m => {
-            if(!m || !m.date) return;
-            // programado = no terminado y fecha >= hoy
-            if(m.completed) return;
-            const daysUntil = calcDaysUntil(m.date);
-            if(daysUntil === null) return;
-            if(daysUntil >= 0){
-              upcomingMaint.push({
-                vehicleName: v.name || v.plates || 'Vehículo',
-                date: m.date,
-                type: m.type || 'mantenimiento',
-                daysUntil
-              });
+              const upcomingMaint = [];
+              const vehicleById = new Map((vehicles || []).map(v => [String(v.id), v]));
+
+              // Recorremos por entries para evitar desincronizaciones por llaves numéricas/string
+              const entries = Object.entries(maintenances || {});
+              for(const [vidKey, list] of entries){
+                const v = vehicleById.get(String(vidKey));
+                if(!v) continue; // si el vehículo no existe, ignorar (huérfano)
+                (list || []).forEach(m => {
+                  if(!m) return;
+                  if(isMaintenanceCompleted(m)) return; // solo programados
+                  const dRaw = m.plannedDate || m.date;
+                  if(!dRaw) return;
+
+                  const dISO = normalizeISODateString(dRaw);
+                  const daysUntil = calcDaysUntil(dISO);
+                  if(daysUntil === null) return;
+                  if(daysUntil >= 0){
+                    upcomingMaint.push({
+                      vehicleName: (v.name && v.name.trim()) ? v.name.trim() : (v.plates || 'Vehículo'),
+                      date: dISO,
+                      type: m.type || 'mantenimiento',
+                      daysUntil
+                    });
+                  }
+                });
+              }
+
+              upcomingMaint.sort((a,b) => parseISODateLocal(a.date) - parseISODateLocal(b.date));
+              const top = upcomingMaint.slice(0,10);
+
+              if(top.length === 0){
+                upcomingMaintContainer.innerHTML = '<div class="empty-state"><p>No hay mantenimientos programados</p></div>';
+              }else{
+                upcomingMaintContainer.innerHTML = top.map(item => `
+                  <div class="verification-item">
+                    <div class="item-info">
+                      <h4>${escapeHtml(item.vehicleName)}</h4>
+                      <p>🔧 ${escapeHtml(maintenanceTypeLabel(item.type))}</p>
+                      <p>📅 ${formatDateMX(item.date)}</p>
+                    </div>
+                    <div>
+                      <div class="badge badge-warning">${item.daysUntil} DÍAS</div>
+                    </div>
+                  </div>
+                `).join('');
+              }
             }
-          });
-        });
+    }
 
-        upcomingMaint.sort((a,b) => parseISODateLocal(a.date) - parseISODateLocal(b.date));
-        const top = upcomingMaint.slice(0,10);
-
-        if(top.length === 0){
-          upcomingMaintContainer.innerHTML = '<div class="empty-state"><p>No hay mantenimientos programados</p></div>';
-        }else{
-          upcomingMaintContainer.innerHTML = top.map(item => `
-            <div class="verification-item">
-              <div class="item-info">
-                <h4>${escapeHtml(item.vehicleName)}</h4>
-                <p>🔧 ${escapeHtml(maintenanceTypeLabel(item.type))}</p>
-                <p>📅 ${formatDateMX(item.date)}</p>
-              </div>
-              <div>
-                <div class="badge badge-warning">${item.daysUntil} días</div>
-              </div>
-            </div>
-          `).join('');
-        }
-      }
-
-
-    
     // =========================
     // Foto de vehículo (opcional) - se guarda en vehicles[].image (DataURL)
     // =========================
@@ -2277,12 +4581,16 @@ function setVerificationFormMode(isEdit){
         category: document.getElementById('carCategory').value || 'Particular',
         color: getColorValue('carColor','carColorOther'),
         plates: document.getElementById('carPlates').value.trim(),
+        value: parseFloat(document.getElementById('carValue').value) || 0,
         image: pendingVehicleImageDataUrl || null
       };
 
       vehicles.push(vehicle);
       localStorage.setItem('vehicles', JSON.stringify(vehicles));
       this.reset();
+
+        // reset categoría
+        walletPopulateCategorySelect();
       clearCarPhoto();
       document.getElementById('carColorOther').style.display = 'none';
       document.getElementById('carCategory').value = 'Particular';
@@ -2292,6 +4600,84 @@ function setVerificationFormMode(isEdit){
       renderWorkCarsModule();
       showAlert('success', '¡Vehículo agregado exitosamente!');
     });
+
+    // =========================
+    // Billetera: eventos
+    // =========================
+    const walletForm = document.getElementById('walletForm');
+
+// ===== Categorías =====
+const _typeSel = document.getElementById('walletType');
+const _catAddBtn = document.getElementById('walletCategoryAddBtn');
+const _catDelBtn = document.getElementById('walletCategoryDelBtn');
+if(_typeSel){
+  _typeSel.addEventListener('change', ()=>{
+    const _catSel = document.getElementById('walletCategory');
+    if(_catSel) _catSel.value = '';
+    walletPopulateCategorySelect();
+  });
+}
+if(_catAddBtn){
+  _catAddBtn.onclick = (e)=>{
+    if(e) e.preventDefault();
+    walletAddNewCategory();
+  };
+}
+if(_catDelBtn){
+  _catDelBtn.onclick = (e)=>{
+    if(e) e.preventDefault();
+    walletRemoveCategory();
+  };
+}
+walletPopulateCategorySelect();
+    if(walletForm){
+      walletForm.addEventListener('submit', function(e){
+        e.preventDefault();
+
+        const type = (document.getElementById('walletType')?.value || '').trim();
+        const date = normalizeISODateString(document.getElementById('walletDate')?.value || '');
+        const amount = safeNumber(document.getElementById('walletAmount')?.value);
+        const note = (document.getElementById('walletNote')?.value || '').trim();
+        const category = (document.getElementById('walletCategory')?.value || '').trim();
+
+        if(!type){
+          showAlert('warning','Selecciona el tipo (Ingreso/Egreso).');
+          return;
+        }
+        if(!category){
+          showAlert('warning','Selecciona una categoría.');
+          return;
+        }
+        if(!date){
+          showAlert('warning','Selecciona una fecha.');
+          return;
+        }
+        if(amount <= 0){
+          showAlert('warning','Ingresa un monto válido (> 0).');
+          return;
+        }
+
+        walletTx.push({
+          id: Date.now(),
+          type,
+          category,
+          date,
+          amount,
+          note
+        });
+
+        saveWallet();
+        this.reset();
+
+        // deja la fecha como hoy para capturas rápidas
+        const wd = document.getElementById('walletDate');
+        if(wd){ wd.value = ymd(new Date()); }
+
+        renderWallet();
+        renderDashboard();
+        showAlert('success','Movimiento guardado.');
+      });
+    }
 
     function renderVehicles(){
       const container = document.getElementById('vehiclesList');
@@ -2314,6 +4700,9 @@ function setVerificationFormMode(isEdit){
         const sub = `${escapeHtml(plateTitle)} <span class="bullet">·</span> ${escapeHtml(v.year || '—')} <span class="bullet">·</span> ${escapeHtml(v.color || '—')}`;
         const driverName = getDriverNameForVehicle(v.id);
         const driverLine = (v.category === 'Trabajo' && driverName) ? `<div class="vehicle-subtitle" style="margin-top:.25rem;">👤 ${escapeHtml(driverName)}</div>` : '';
+        const vVal = Number(v.value) || 0;
+        const valLine = `<div class="vehicle-value">💰 ${vVal > 0 ? money(vVal) : '<span style="opacity:.75; font-weight:800;">Sin valor</span>'}</div>`;
+
 
         return `
           <div class="vehicle-row ${isSelected ? 'selected' : ''}" onclick="selectVehicle(${v.id})">
@@ -2321,6 +4710,7 @@ function setVerificationFormMode(isEdit){
               <div>
                 <div class="vehicle-name-main">${escapeHtml(mainTitle)} ${cat}</div>
                 <div class="vehicle-subtitle">${sub}</div>
+                ${valLine}
                 ${driverLine}
               </div>
 
@@ -2379,6 +4769,8 @@ function setVerificationFormMode(isEdit){
 
         // 3) Limpieza extra por si quedara algo huérfano
         cleanupOrphanData();
+    // ✅ Sync inicial: refleja pagos/mantenimientos existentes en Billetera
+    syncAllWorkCarsToWallet();
 
         // 4) Refrescos
         renderVehicles();
@@ -2400,10 +4792,13 @@ function setVerificationFormMode(isEdit){
       document.getElementById('editCarName').value = v.name || '';
       document.getElementById('editCarYear').value = v.year || '';
       document.getElementById('editCarPlates').value = v.plates || '';
+      document.getElementById('editCarValue').value = (Number(v.value) || 0) ? (Number(v.value) || 0) : '';
       document.getElementById('editCarCategory').value = v.category || 'Particular';
       setColorSelect('editCarColor','editCarColorOther', v.color || '');
 
-      // reset estado de foto en edición
+      
+      syncVehicleColorPalette('editCarColor','editCarColorOther');
+// reset estado de foto en edición
       pendingEditVehicleImageDataUrl = undefined;
       const eWrap = document.getElementById('editCarPhotoPreviewWrap');
       const eImg = document.getElementById('editCarPhotoPreview');
@@ -2442,6 +4837,7 @@ function setVerificationFormMode(isEdit){
         category: document.getElementById('editCarCategory').value || 'Particular',
         color: getColorValue('editCarColor','editCarColorOther'),
         plates: document.getElementById('editCarPlates').value.trim(),
+        value: parseFloat(document.getElementById('editCarValue').value) || 0,
         // foto: solo cambia si el usuario seleccionó / quitó una
         image: (pendingEditVehicleImageDataUrl !== undefined) ? pendingEditVehicleImageDataUrl : vehicles[idx].image
       };
@@ -2997,7 +5393,7 @@ function deleteVerification(vehicleId, id){
 
       container.innerHTML = records.map(record => {
         const daysUntil = calcDaysUntil(record.date);
-        const isPlanned = (record.completed !== true) && (daysUntil !== null) && (daysUntil >= 0); // hoy o futuro
+        const isPlanned = (!isMaintenanceCompleted(record)) && (daysUntil !== null) && (daysUntil >= 0); // hoy o futuro
         const badge = isPlanned
           ? '<span class="badge badge-warning">Programado</span>'
           : '<span class="badge badge-success">Realizado</span>';
@@ -3092,7 +5488,7 @@ function deleteVerification(vehicleId, id){
       const todayISO = ymd(today);
 
       // si estaba programado, guardamos fecha original
-      const planned = rec.plannedDate || rec.date || null;
+      const planned = normalizeISODateString(rec.plannedDate || rec.date || '') || null;
 
       list[idx] = {
         ...rec,
@@ -3165,6 +5561,9 @@ function selectVehicleForMaintenance(id){
         this.reset();
         localStorage.setItem('maintenances', JSON.stringify(maintenances));
 
+        // Sync a billetera (Egreso -> Mantenimientos autos) si aplica
+        try{ syncMaintenanceToWallet(vid, maintenances[vid][idx]); }catch(_e){}
+
         renderMaintenancesFor(vid);
         renderDashboard();
         renderVehicles();
@@ -3183,11 +5582,14 @@ function selectVehicleForMaintenance(id){
         cost,
         km,
         completed: isDoneAuto,
-        plannedDate: null
+        plannedDate: (isDoneAuto ? null : date)
       };
 
       maintenances[vid].push(maintenance);
       localStorage.setItem('maintenances', JSON.stringify(maintenances));
+
+      // Sync a billetera (Egreso -> Mantenimientos autos) si aplica
+      try{ syncMaintenanceToWallet(vid, maintenance); }catch(_e){}
 
       this.reset();
       setMaintenanceFormMode(false);
@@ -3277,15 +5679,24 @@ function selectVehicleForMaintenance(id){
       const container = document.getElementById('maintenanceList');
       if(!container) return;
 
-      if(!selectedVehicle || !maintenances[selectedVehicle.id] || maintenances[selectedVehicle.id].length === 0){
-        container.innerHTML = '<div class="empty-state"><p>No hay mantenimientos registrados para este vehículo</p></div>';
+      // ⚠️ Si no hay vehículo seleccionado, no mostrar residuos viejos
+      if(!selectedVehicle){
+        container.innerHTML = '<div class="empty-state"><p>Selecciona un vehículo para ver su historial</p></div>';
         return;
       }
 
-      // ✅ FIX sort: usar parse local
-      const records = maintenances[selectedVehicle.id].sort((a,b) =>
-        (parseISODateLocal(b.date) - parseISODateLocal(a.date))
-      );
+      const vehicleId = String(selectedVehicle.id);
+
+      // 🔒 Solo mantenimientos que realmente pertenecen al vehículo (evita "fantasmas")
+      const records = (maintenances[vehicleId] || [])
+        .filter(m => String(m.vehicleId || vehicleId) === vehicleId)
+        .slice()
+        .sort((a,b) => (parseISODateLocal(b.date) - parseISODateLocal(a.date)));
+
+      if(records.length === 0){
+        container.innerHTML = '<div class="empty-state"><p>No hay mantenimientos registrados para este vehículo</p></div>';
+        return;
+      }
 
       const typeNames = {
         cambio_aceite:'🛢️ Cambio de Aceite', afinacion:'⚙️ Afinación', frenos:'🛑 Frenos', llantas:'🚗 Llantas',
@@ -3295,13 +5706,16 @@ function selectVehicleForMaintenance(id){
       container.innerHTML = records.map(record => `
         <div class="maintenance-item">
           <div class="item-info">
-            <h4>${typeNames[record.type] || record.type}</h4>
-            <p>${escapeHtml(record.description)}</p>
+            <h4>${typeNames[record.type] || escapeHtml(record.type || 'Mantenimiento')}</h4>
+            <p>${escapeHtml(record.description || '')}</p>
             <p>📅 ${formatDateMX(record.date)}
               ${record.cost ? ` • 💰 $${parseFloat(record.cost).toFixed(2)}` : ''}
               ${record.km ? ` • 🛣️ ${escapeHtml(record.km)} km` : ''}</p>
+            ${record.plannedDate && String(record.plannedDate) !== String(record.date)
+              ? `<p class="planned-note">📌 Programado originalmente: ${formatDateMX(record.plannedDate)}</p>`
+              : ''}
           </div>
-          <button class="btn btn-danger" onclick="deleteMaintenance(${record.id})" style="padding:.55rem 1rem;">Eliminar</button>
+          <button class="btn btn-danger" onclick="deleteMaintenance(${record.id}, ${vehicleId})" style="padding:.55rem 1rem;">Eliminar</button>
         </div>
       `).join('');
     }
@@ -3673,13 +6087,18 @@ function selectVehicleForMaintenance(id){
       if(!workPayments[vehicleId]) workPayments[vehicleId] = {};
       const trimmed = String(valueStr ?? '').trim();
 
+      let num = null;
       if(trimmed === ''){
         delete workPayments[vehicleId][weekStartISO];
       }else{
-        const num = safeNumber(trimmed);
+        num = safeNumber(trimmed);
         workPayments[vehicleId][weekStartISO] = num;
       }
+
       localStorage.setItem('workPayments', JSON.stringify(workPayments));
+
+      // Sync a billetera (Ingreso -> Autos)
+      syncWorkPaymentToWallet(vehicleId, weekStartISO, num);
     }
 
     function renderWeekDetailCards(){
@@ -4112,6 +6531,59 @@ function selectVehicleForMaintenance(id){
       }
     }
 
+    // ✅ NUEVO: migración para registros viejos de mantenimientos (completed/plannedDate)
+    function migrateMaintenanceCompletedFields(){
+      let changed = false;
+
+      Object.keys(maintenances || {}).forEach(vid => {
+        const arr = maintenances[vid];
+        if(!Array.isArray(arr)) return;
+
+        arr.forEach(r => {
+          if(!r) return;
+
+          // normalizar "completed"
+          if(typeof r.completed !== 'boolean'){
+            const v = r.completed;
+            r.completed = (v === true || v === 1 || (typeof v === 'string' && v.toLowerCase() === 'true'));
+            changed = true;
+          }
+
+          // si está completado y no tiene plannedDate, dejamos plannedDate vacío (no afecta)
+          if(r.completed === true && typeof r.plannedDate !== 'string'){
+            // puede ser null, lo dejamos como null para indicar "no había programación"
+            if(r.plannedDate !== null){
+              r.plannedDate = null;
+              changed = true;
+            }
+          }
+
+          // si NO está completado y no tiene plannedDate, asumimos que la fecha es la programada
+          if(r.completed === false && (!r.plannedDate || typeof r.plannedDate !== 'string')){
+            if(r.date){
+              r.plannedDate = r.date;
+              changed = true;
+            }
+          }
+
+          // normalizar date/plannedDate a ISO si vienen en DD/MM/YYYY
+          if(r.date){
+            const n1 = normalizeISODateString(r.date);
+            if(n1 && n1 !== r.date){ r.date = n1; changed = true; }
+          }
+          if(r.plannedDate){
+            const n2 = normalizeISODateString(r.plannedDate);
+            if(n2 && n2 !== r.plannedDate){ r.plannedDate = n2; changed = true; }
+          }
+        });
+      });
+
+      if(changed){
+        localStorage.setItem('maintenances', JSON.stringify(maintenances));
+      }
+    }
+
+
     // ✅ NUEVO: limpieza de workPayments huérfanos (evita "ganancias fantasmas" por ids antiguos)
     function cleanupWorkPaymentsOrphans(){
       const validIds = new Set((vehicles || []).map(v => String(v.id)));
@@ -4131,6 +6603,7 @@ function selectVehicleForMaintenance(id){
 
     migrateVehiclesCategoryIfMissing();
     migrateVerificationCompletedFields();
+    migrateMaintenanceCompletedFields();
     cleanupWorkPaymentsOrphans();
     cleanupOrphanData();
     setupCarPhotoUploader();
@@ -4155,6 +6628,10 @@ function selectVehicleForMaintenance(id){
       const weeks = computeWeeksForMonth(selectedMonthISO);
       selectedWeekStartISO = weeks.length ? weeks[0].startISO : '';
     }
+
+    // Inicializar paletas de color de Vehículos
+    try{ initVehicleColorPalettes(); }catch(e){}
+
   </script>
 <script>
     if ('serviceWorker' in navigator) {
