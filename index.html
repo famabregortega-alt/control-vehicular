@@ -1484,7 +1484,8 @@
 
 </style>
 
-<link href="/favicon-32.png" rel="icon" sizes="32x32" type="image/png"/><link href="/icon-192.png" rel="icon" sizes="192x192" type="image/png"/><link href="/icon-512.png" rel="icon" sizes="512x512" type="image/png"/>  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+<link href="/favicon-32.png" rel="icon" sizes="32x32" type="image/png"/><link href="/icon-192.png" rel="icon" sizes="192x192" type="image/png"/><link href="/icon-512.png" rel="icon" sizes="512x512" type="image/png"/>  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
 </head>
 <body>
 <div class="container">
@@ -1493,10 +1494,10 @@
 <p>Sistema integral de gestión y mantenimiento de vehículos</p>
 </div>
 <nav class="main-nav">
-<button class="nav-btn active" onclick="showSection('dashboard', event)">Inicio</button>
-<button class="nav-btn" onclick="showSection('vehicles', event)">Autos</button>
-<button class="nav-btn" onclick="showSection('verification', event)">Ver. &amp; Multas</button>
-<button class="nav-btn" onclick="showSection('maintenance', event)">Mant.</button>
+<button class="nav-btn active" onclick="showSection('dashboard', event)">Dashboard</button>
+<button class="nav-btn" onclick="showSection('vehicles', event)">Vehículos</button>
+<button class="nav-btn" onclick="showSection('verification', event)">Verificaciones &amp; Multas</button>
+<button class="nav-btn" onclick="showSection('maintenance', event)">Mantenimientos</button>
 <button class="nav-btn" onclick="showSection('workcars', event)">Autos de trabajo</button>
 <button class="nav-btn" onclick="showSection('wallet', event)">Billetera</button>
 </nav>
@@ -1515,7 +1516,10 @@
 <div class="number" id="overdueCount">0</div>
 <div class="label">Verificaciones Vencidas</div>
 </div>
-<div class="stat-card">  <div class="number" id="dashboardSaldo2026">$0.00</div>  <div id="upcomingCount" style="display:none">0</div>  <div class="label">SALDO DESDE 2026</div></div>
+<div class="stat-card">
+<div class="number" id="upcomingCount">0</div>
+<div class="label">Próximas (30 días)</div>
+</div>
 </div>
 <div id="dashboardAlerts"></div>
 <div class="card">
@@ -2280,6 +2284,49 @@
       });
     }
 
+
+    // Upsert de verificación/tenencia/multa (Egreso -> Billetera) SOLO si está TERMINADO
+    function syncVerificationToWallet(vehicleId, verificationObj){
+      if(!verificationObj) return;
+      const rid = verificationObj.id;
+      const txId = `vf:${vehicleId}:${rid}`;
+
+      // Solo cuenta al terminar (completed === true)
+      if(verificationObj.completed !== true){
+        _walletRemoveTx(txId);
+        return;
+      }
+
+      // Asegura categoría de egreso exista para que salga en filtros/gráficas
+      const CAT = 'Verificaciones y multas';
+      try{
+        walletLoadCategories();
+        if(Array.isArray(walletCatsOut) && !walletCatsOut.includes(CAT)){
+          walletCatsOut.push(CAT);
+          walletSaveCategories();
+        }
+      }catch(_e){}
+
+      const amt = safeNumber(verificationObj.amount);
+      const date = (verificationObj.completedDate && String(verificationObj.completedDate).trim())
+        ? String(verificationObj.completedDate).trim()
+        : ((verificationObj.date && String(verificationObj.date).trim()) ? String(verificationObj.date).trim() : ymd(new Date()));
+
+      const veh = _vehicleTitleById(vehicleId);
+      const type = (verificationObj.type && String(verificationObj.type).trim()) ? String(verificationObj.type).trim() : 'Verificación';
+      const notes = (verificationObj.notes && String(verificationObj.notes).trim()) ? String(verificationObj.notes).trim() : '';
+      const extra = notes ? ` - ${notes}` : '';
+
+      _walletUpsertTx(txId, {
+        type: 'out',
+        category: CAT,
+        date,
+        amount: amt,
+        note: `${type} (${veh})${extra} [TERMINADO]`
+      });
+    }
+
+
     // Backfill / Re-sync completo (Autos de trabajo -> Billetera)
     // Esto asegura que pagos/mantenimientos YA existentes se reflejen sin tener que editarlos.
     function syncAllWorkCarsToWallet(){
@@ -2301,6 +2348,19 @@
             if(Array.isArray(list)){
               for(const m of list){
                 syncMaintenanceToWallet(vid, m);
+              }
+            }
+          }
+        }
+
+
+        // Sync de verificaciones/tenencias/multas (Egresos) - SOLO terminados
+        if(verifications){
+          for(const vid of Object.keys(verifications)){
+            const list = verifications[vid] || [];
+            if(Array.isArray(list)){
+              for(const r of list){
+                syncVerificationToWallet(vid, r);
               }
             }
           }
@@ -4317,7 +4377,7 @@ ntent = overdueCount;
       }else{
         const items = vehicles.map(v => {
           const soon = getSoonestRecord(v.id);
-          const title = (v.name && v.name.trim()) ? v.name.trim() : ((v.plates && v.plates.trim()) ? v.plates.trim() : 'Vehículo');
+          const title = (v.plates && v.plates.trim()) ? v.plates.trim() : (v.name || 'Vehículo');
           if(!soon){
             return { v, title, daysUntil:null, date:null, type:null, info:{ pct:0, cls:'good', text:'Sin fechas' } };
           }
@@ -4961,6 +5021,9 @@ walletPopulateCategorySelect();
           verifications[vid] = list;
           localStorage.setItem('verifications', JSON.stringify(verifications));
 
+
+          // Sync a Billetera si el registro ya estaba terminado o cambió el monto/nota
+          try{ syncVerificationToWallet(vid, list[idx]); renderWallet(); }catch(_e){}
           editingVerification = { vehicleId: null, recordId: null };
           setVerificationFormMode(false);
           this.reset();
@@ -4986,6 +5049,9 @@ walletPopulateCategorySelect();
       verifications[selectedVehicle.id].push(verification);
       localStorage.setItem('verifications', JSON.stringify(verifications));
 
+
+      // Aún no se cuenta en Billetera hasta TERMINAR, pero dejamos listo el sync (por si se crea terminado en futuro)
+      try{ syncVerificationToWallet(selectedVehicle.id, verification); renderWallet(); }catch(_e){}
       this.reset();
       renderVerificationsFor(selectedVehicle.id);
       checkVerificationAlerts();
@@ -5116,6 +5182,8 @@ walletPopulateCategorySelect();
       verifications[vehicleId] = list;
       localStorage.setItem('verifications', JSON.stringify(verifications));
 
+      try{ syncVerificationToWallet(vehicleId, list[idx]); renderWallet(); }catch(_e){}
+
       renderVerificationsFor(vehicleId);
       checkVerificationAlerts();
       renderDashboard();
@@ -5155,6 +5223,8 @@ function deleteVerification(vehicleId, id){
       if(!vid) return;
 
       if(confirm('¿Eliminar este registro?')){
+        // Quita el egreso asociado en Billetera (si existía)
+        try{ _walletRemoveTx(`vf:${vid}:${rid}`); renderWallet(); }catch(_e){}
         verifications[vid] = (verifications[vid] || []).filter(v => v.id !== rid);
         localStorage.setItem('verifications', JSON.stringify(verifications));
         renderVerificationsFor(vid);
@@ -5179,6 +5249,8 @@ function deleteVerification(vehicleId, id){
       verifications[selectedVehicle.id] = list;
       localStorage.setItem('verifications', JSON.stringify(verifications));
 
+
+      try{ syncVerificationToWallet(selectedVehicle.id, list[idx]); renderWallet(); }catch(_e){}
       renderVerifications();
       checkVerificationAlerts();
       renderDashboard();
@@ -5199,6 +5271,8 @@ function deleteVerification(vehicleId, id){
       verifications[selectedVehicle.id] = list;
       localStorage.setItem('verifications', JSON.stringify(verifications));
 
+
+      try{ syncVerificationToWallet(selectedVehicle.id, list[idx]); renderWallet(); }catch(_e){}
       renderVerifications();
       checkVerificationAlerts();
       renderDashboard();
@@ -6637,51 +6711,6 @@ function selectVehicleForMaintenance(id){
       });
     }
   </script>
-
-
-<script>
-/* DASHBOARD_SALDO_DESDE_2026 */
-(function(){
-  function parseDateSafe(v){
-    if(!v) return null;
-    const d = new Date(v);
-    return isNaN(d.getTime()) ? null : d;
-  }
-
-  function calcularSaldoDesde2026(){
-    try{
-      const inicio = new Date("2026-01-01T00:00:00");
-      const tx = JSON.parse(localStorage.getItem("walletTx") || "[]"); // fuente real de Billetera
-      let saldo = 0;
-
-      for(const t of tx){
-        const fecha = parseDateSafe(t.date || t.fecha || t.createdAt || t.timestamp);
-        if(!fecha || fecha < inicio) continue;
-
-        const tipo = String(t.type || t.tipo || "").toLowerCase(); // 'in' | 'out'
-        const monto = Number(t.amount ?? t.monto ?? 0) || 0;
-
-        if(tipo === "in") saldo += monto;
-        else if(tipo === "out") saldo -= monto;
-      }
-
-      const el = document.getElementById("dashboardSaldo2026") || document.getElementById("dashboard");
-      if(el){
-        el.textContent = saldo.toLocaleString("es-MX",{style:"currency",currency:"MXN"});
-      }
-    }catch(e){
-      console.error("Saldo dashboard error:", e);
-    }
-  }
-
-  document.addEventListener("DOMContentLoaded", calcularSaldoDesde2026);
-  window.addEventListener("storage", (ev)=>{
-    if(ev.key === "walletTx") calcularSaldoDesde2026();
-  });
-  document.addEventListener("walletUpdated", calcularSaldoDesde2026);
-})();
-</script>
-
 </body>
 </html>
 
